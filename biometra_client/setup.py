@@ -31,8 +31,6 @@ setup(
     license='MIT License',
     entry_points={ 
         'console_scripts': [
-             'biometra_client = biometra_client.biometra_client:main_null',
-             'tcp_driver = biometra_client.tcp_driver:main_null',
         ]
     },
     classifiers=[
