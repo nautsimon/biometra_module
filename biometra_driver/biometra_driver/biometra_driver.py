@@ -1,5 +1,3 @@
-
-
 import os
 import clr
 
@@ -19,6 +17,9 @@ class biometra_trobot():
         self.block_cmds = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockCmds(self.settings.CommunicationSettings, self.device_desc)
         self.block_n = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses.BlockNumber(1)
 
+        # self.fileInfo = BiometraLibrary.DeviceExtComClasses.DeviceComClasses.DeviceComParams
+        self.DataSetList = BiometraLibrary.HelperClasses.DataSetHelperClasses.DataSetList
+
         self.login_user()
 
     def find_device(self):
@@ -33,6 +34,15 @@ class biometra_trobot():
         err = login.LoginUser(self.device_desc,user,passwd)
         if err:
             print(err)
+    
+    def create_program(self):
+        # self.file = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker(self.fileInfo)
+        self.programFileWorker = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker()
+        self.checkStateResult = self.programFileWorker.ReadAllProgramTemplateInfosToShow(self.DataSetList)
+
+        # Create new program
+        self.pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram()
+        
 
     def lid_open(self):
         self.block_cmds.OpenMotLid(self.device_desc,self.block_n)
@@ -42,5 +52,6 @@ class biometra_trobot():
 
 if __name__ == "__main__":
     test = biometra_trobot()
-    test.lid_open()
+    # test.lid_open()
     test.lid_close()
+
