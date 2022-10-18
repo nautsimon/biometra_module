@@ -2,16 +2,6 @@ import os
 from setuptools import setup, find_packages
 
 
-install_requires = []
-with open('requirements.txt') as reqs:
-    for line in reqs.readlines():
-        req = line.strip()
-        if not req or req.startswith('#'):
-            continue
-        install_requires.append(req)
-
-
-##this is weird. 
 package_name = 'biometra_driver'
 
 setup(
@@ -23,7 +13,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
     ],
-    install_requires=install_requires,
+    install_requires=['pythonnet'],
     zip_safe=True,
     python_requires=">=3.8",
     maintainer='Rafael Vescovi',

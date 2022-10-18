@@ -1,14 +1,6 @@
 import os
 from setuptools import setup, find_packages
-
-
-install_requires = []
-with open('requirements.txt') as reqs:
-    for line in reqs.readlines():
-        req = line.strip()
-        if not req or req.startswith('#'):
-            continue
-        install_requires.append(req)
+from glob import glob
 
 package_name = 'biometra_client'
 
@@ -20,8 +12,9 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
-    install_requires=install_requires,
+    install_requires=[]],
     zip_safe=True,
     python_requires=">=3.8",
     maintainer='',
@@ -31,16 +24,7 @@ setup(
     license='MIT License',
     entry_points={ 
         'console_scripts': [
+            'biometraNode = biometra_client.biometraNode:main',
         ]
     },
-    classifiers=[
-        'Intended Audience :: Science/Research',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: POSIX',
-        'Operating System :: MacOS :: MacOS X',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-    ],
 )
