@@ -1,8 +1,10 @@
 import os
 import clr
+from pathlib import Path 
 
-here = os.getcwd()
-clr.AddReference(os.path.join(here,'dotnet','BiometraLibraryNet'))
+dotnet_path = Path(__file__).resolve().parent / 'dotnet' / 'BiometraLibraryNet'
+clr.AddReference(str(dotnet_path))
+
 import BiometraLibrary 
 
 class biometra_trobot():
@@ -42,7 +44,10 @@ class biometra_trobot():
 
         # Create new program
         self.pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram()
-        
+
+    def get_state(self):
+        pass
+    # return self.pcr???         
 
     def lid_open(self):
         self.block_cmds.OpenMotLid(self.device_desc,self.block_n)

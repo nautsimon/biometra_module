@@ -33,10 +33,8 @@ pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.Pcr
 
 def login_user():  
     login_cmds = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.LoginOutCmds(settings.CommunicationSettings,device_desc)
-    err = login_cmds.LoginUser(device_desc,user,passwd)
-    if err:
-        print(err)
-
+    return check_error(login_cmds.LoginUser(device_desc,user,passwd))
+   
 login_user()
 
 def check_error(err):
