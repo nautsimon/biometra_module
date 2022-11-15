@@ -7,7 +7,7 @@ def generate_launch_description():
     
     biometra_client = Node(
             package = 'biometra_client',
-            namespace = 'biometra_client',
+            namespace = 'std_ns',
             executable = 'biometra_client',
             output = "screen",
             name='biometraNode'
