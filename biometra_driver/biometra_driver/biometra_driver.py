@@ -48,6 +48,9 @@ class biometra_trobot():
 
         # Create new program
         self.pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram()
+    
+    def create_program(self, params):
+        pass
 
     def get_state(self):
         pass
