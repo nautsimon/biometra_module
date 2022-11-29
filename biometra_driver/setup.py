@@ -8,12 +8,6 @@ setup(
     name='biometra_driver',
     version='0.0.1',
     packages=find_packages(),
-    data_files=[
-       ('share/ament_index/resource_index/packages',
-           ['resource/' + package_name]),
-       ('share/' + package_name, ['package.xml']),
-       (package_name+ '/dotnet/', ['package.xml']),
-    ],
     package_data={package_name: ["dotnet/*.dll", "dotnet/*.xml"]},
     install_requires=["pythonnet"],
     zip_safe=True,
