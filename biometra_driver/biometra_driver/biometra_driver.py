@@ -1,8 +1,8 @@
-import os
 import clr
+from pathlib import Path 
 
-here = os.getcwd()
-clr.AddReference(os.path.join(here,'dotnet','BiometraLibraryNet'))
+dotnet_path = Path(__file__).resolve().parent / 'dotnet' / 'BiometraLibraryNet'
+clr.AddReference(str(dotnet_path))
 import BiometraLibrary 
 
 class biometra_trobot():
@@ -22,6 +22,13 @@ class biometra_trobot():
 
         self.login_user()
 
+    def check_error(self, err):
+        if err:
+            self.error = err
+            print(err)
+            return -1
+        return 0
+
     def find_device(self):
         n, avail = self.info.GetAllComAvailableDevices()   
         device_desc = avail.get_DataList().get_Item(0).DeviceInfos.DeviceDescriptionInfo
@@ -32,8 +39,7 @@ class biometra_trobot():
         user = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses.UserInitials('ADM')
         passwd = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses.UserPassword('Admin')
         err = login.LoginUser(self.device_desc,user,passwd)
-        if err:
-            print(err)
+        return self.check_error(err)
     
     def create_program(self):
         # self.file = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker(self.fileInfo)
@@ -42,12 +48,18 @@ class biometra_trobot():
 
         # Create new program
         self.pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram()
-        
+    
+    def create_program(self, params):
+        pass
 
-    def lid_open(self):
+    def get_state(self):
+        pass
+    # return self.pcr???                
+
+    def open_lid(self):
         self.block_cmds.OpenMotLid(self.device_desc,self.block_n)
 
-    def lid_close(self):
+    def close_lid(self):
         self.block_cmds.CloseMotLid(self.device_desc,self.block_n)
 
 if __name__ == "__main__":
