@@ -1,12 +1,11 @@
-import os
 from setuptools import setup, find_packages
 
 
-package_name = 'biometra_driver'
+package_name = "biometra_driver"
 
 setup(
-    name='biometra_driver',
-    version='0.0.1',
+    name="biometra_driver",
+    version="0.0.1",
     packages=find_packages(),
     package_data={package_name: ["dotnet/*.dll", "dotnet/*.xml"]},
     install_requires=["pythonnet"],
