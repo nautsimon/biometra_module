@@ -79,7 +79,7 @@
     <limit effort="1000.0" lower="1.2" upper="1.2" velocity="0.5"/>
   </joint>
 
-  <joint name="Biometra_Cap2" type="revolute">
+  <joint name="Biometra_Cap2" type="prismatic">
     <parent link="${prefix}biometra_base2"/>
     <child link="${prefix}biometra_cap2"/>
     <axis xyz="-1 0 0"/>
