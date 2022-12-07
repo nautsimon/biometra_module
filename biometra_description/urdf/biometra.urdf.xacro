@@ -8,13 +8,13 @@
     <visual>
       <origin xyz="0 0.5 1.042" rpy="1.5708 0 0"/>
       <geometry>
-        <mesh filename="package://pf400_description/meshes/biometra_base.STL" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://biometra_description/meshes/biometra_base.STL" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="light_grey"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://pf400_description/meshes/biometra_base.STL" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://biometra_description/meshes/biometra_base.STL" scale="0.001 0.001 0.001"/>
       </geometry>
       <origin xyz="0 0.5 1.042" rpy="1.5708 0 0"/>
     </collision>
@@ -24,13 +24,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://pf400_description/meshes/biometra_cap.STL" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://biometra_description/meshes/biometra_cap.STL" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="red"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://pf400_description/meshes/biometra_cap.STL" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://biometra_description/meshes/biometra_cap.STL" scale="0.001 0.001 0.001"/>
       </geometry>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </collision>
@@ -40,13 +40,13 @@
     <visual>
       <origin xyz="0 0.5 1.042" rpy="1.5708 0 0"/>
       <geometry>
-        <mesh filename="package://pf400_description/meshes/biometra_base.STL" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://biometra_description/meshes/biometra_base.STL" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="light_grey"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://pf400_description/meshes/biometra_base.STL" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://biometra_description/meshes/biometra_base.STL" scale="0.001 0.001 0.001"/>
       </geometry>
       <origin xyz="0 0.5 1.042" rpy="1.5708 0 0"/>
     </collision>
@@ -56,13 +56,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://pf400_description/meshes/biometra_cap.STL" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://biometra_description/meshes/biometra_cap.STL" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="red"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://pf400_description/meshes/biometra_cap.STL" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://biometra_description/meshes/biometra_cap.STL" scale="0.001 0.001 0.001"/>
       </geometry>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </collision>

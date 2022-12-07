@@ -37,7 +37,7 @@ class BiometraDescriptionClient(Node):
     
     def stateCallback(self):
         '''
-        Publishes the pf400_description state to the 'state' topic. 
+        Publishes the biometra_description state to the 'state' topic. 
         '''
         msg = String()
         msg.data = 'State: %s' % self.state
