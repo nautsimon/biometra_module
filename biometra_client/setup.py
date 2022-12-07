@@ -14,7 +14,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
-    install_requires=[]],
+    install_requires=[],
     zip_safe=True,
     python_requires=">=3.8",
     maintainer='',

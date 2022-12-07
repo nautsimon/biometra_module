@@ -9,7 +9,7 @@ from wei_services.srv import WeiActions
 
 from time import sleep
 
-from biometra_driver.biometra_driver import biometra # import biometra driver
+from biometra_driver.biometra_driver import biometra_trobot
 
 class biometraNode(Node):
     '''
@@ -24,8 +24,8 @@ class biometraNode(Node):
 
         super().__init__(NODE_NAME)
         
-        self.biometra = biometra()
-        self.state = "UNKNOWN"
+        self.biometra = biometra_trobot()
+        self.state = "READY"
 
         
         self.description = {
@@ -84,7 +84,7 @@ class biometraNode(Node):
         if request.action_handle=='close_lid':            
             self.state = "BUSY"
             self.stateCallback()
-            self.biometra.open_lid()    
+            self.biometra.close_lid()    
             response.action_response = True
         if request.action_handle=='close_lid':
             self.state = "BUSY"
