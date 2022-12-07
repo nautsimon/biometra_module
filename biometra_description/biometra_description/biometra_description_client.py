@@ -13,7 +13,7 @@ from std_srvs.srv import Empty
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Header
 
-from biometra_driver.biometra_driver import biometra_trobot
+# from biometra_driver.biometra_driver import biometra_trobot # TODO:UNCOMMENT THIS WHEN IT IS READY
 
 class BiometraDescriptionClient(Node):
 
@@ -50,22 +50,29 @@ class BiometraDescriptionClient(Node):
         
         # self.get_logger().info("BUGG")
         # joint_states = self.biometra.refresh_joint_state() #USE THIS FORMAT WHEN IT IS READY
-        joint_states = [1.2]
-        biometra_joint_msg = JointState()
-        biometra_joint_msg.header = Header()
-        biometra_joint_msg.header.stamp = self.get_clock().now().to_msg()
-        biometra_joint_msg.name = ['Biometra_Cap2']
-        biometra_joint_msg.position = joint_states
+        joint_states_biometra_1 = [1.2]
+        biometra_joint_msg_biometra_1 = JointState()
+        biometra_joint_msg_biometra_1.header = Header()
+        biometra_joint_msg_biometra_1.header.stamp = self.get_clock().now().to_msg()
+        biometra_joint_msg_biometra_1.name = ['Biometra_Cap']
+        biometra_joint_msg_biometra_1.position = joint_states_biometra_1
+        biometra_joint_msg_biometra_1.velocity = []
+        biometra_joint_msg_biometra_1.effort = []
 
-        # biometra_joint_msg.position = [0.01, -1.34, 1.86, -3.03, 0.05, 0.05, 0.91]
-    
-        # print(joint_states)
+        self.joint_publisher.publish(biometra_joint_msg_biometra_1)
+        self.get_logger().info('Publishing joint states: "%s"' % str(joint_states_biometra_1))
 
-        biometra_joint_msg.velocity = []
-        biometra_joint_msg.effort = []
+        joint_states_biometra_2 = [0.0]
+        biometra_joint_msg_biometra_2 = JointState()
+        biometra_joint_msg_biometra_2.header = Header()
+        biometra_joint_msg_biometra_2.header.stamp = self.get_clock().now().to_msg()
+        biometra_joint_msg_biometra_2.name = ['Biometra_Cap2']
+        biometra_joint_msg_biometra_2.position = joint_states_biometra_2
+        biometra_joint_msg_biometra_2.velocity = []
+        biometra_joint_msg_biometra_2.effort = []
 
-        self.joint_publisher.publish(biometra_joint_msg)
-        self.get_logger().info('Publishing joint states: "%s"' % str(joint_states))
+        self.joint_publisher.publish(biometra_joint_msg_biometra_2)
+        self.get_logger().info('Publishing joint states: "%s"' % str(joint_states_biometra_2))
 
 
 def main(args=None):
