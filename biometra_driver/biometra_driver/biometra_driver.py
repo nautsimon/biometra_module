@@ -54,8 +54,23 @@ class biometra_trobot():
 
     def get_state(self):
         pass
-    # return self.pcr???                
 
+    def list_programs():
+        err, program_list = program_cmds.GetProgramOverview(device_desc,user)
+
+    def create_pcr_program():
+        pass
+
+    def run_pcr_program(prog):
+        prog_type = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.EnProgramType.TYPE_PROGRAM
+        program_n = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.ProgramNumber(prog, prog_type)
+        err = block_cmds.StartProgramOnBlock(device_desc, user, program_n, block_n, True)
+        check_error(err)
+
+    def stop_program():
+        err = block_cmds.StopProgramOnBlock(device_desc, block_n)
+        check_error(err)
+    
     def open_lid(self):
         self.block_cmds.OpenMotLid(self.device_desc,self.block_n)
 
