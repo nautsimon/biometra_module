@@ -13,14 +13,14 @@ from std_srvs.srv import Empty
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Header
 
-from pf400_driver.pf400_driver import PF400
+from biometra_driver.biometra_driver import biometra_trobot
 
-class PF400DescriptionClient(Node):
+class BiometraDescriptionClient(Node):
 
-    def __init__(self, NODE_NAME = 'PF400DescriptionNode'):
+    def __init__(self, NODE_NAME = 'BiometraDescriptionNode'):
         super().__init__(NODE_NAME)
 
-        self.pf400 = PF400("192.168.50.50",10000)
+        # self.biometra = biometra_trobot() #USE THIS LINE WHEN IT IS READY
 
         timer_period = 0.1  # seconds
 
@@ -49,37 +49,40 @@ class PF400DescriptionClient(Node):
     def joint_state_publisher_callback(self):
         
         # self.get_logger().info("BUGG")
-        joint_states = self.pf400.refresh_joint_state()
-        pf400_joint_msg = JointState()
-        pf400_joint_msg.header = Header()
-        pf400_joint_msg.header.stamp = self.get_clock().now().to_msg()
-        pf400_joint_msg.name = ['J1', 'J2', 'J3', 'J4', 'J5','J5_mirror', 'J6']
-        pf400_joint_msg.position = joint_states
+        # joint_states = self.biometra.refresh_joint_state() #USE THIS FORMAT WHEN IT IS READY
+        joint_states = [1.2]
+        biometra_joint_msg = JointState()
+        biometra_joint_msg.header = Header()
+        biometra_joint_msg.header.stamp = self.get_clock().now().to_msg()
+        biometra_joint_msg.name = ['Biometra_Cap2']
+        biometra_joint_msg.position = joint_states
+
+        # biometra_joint_msg.position = [0.01, -1.34, 1.86, -3.03, 0.05, 0.05, 0.91]
+    
         # print(joint_states)
 
-        # pf400_joint_msg.position = [0.01, -1.34, 1.86, -3.03, 0.05, 0.05, 0.91]
-        pf400_joint_msg.velocity = []
-        pf400_joint_msg.effort = []
+        biometra_joint_msg.velocity = []
+        biometra_joint_msg.effort = []
 
-        self.joint_publisher.publish(pf400_joint_msg)
-        self.get_logger().info('Publishing joint states: "%s"' % joint_states)
+        self.joint_publisher.publish(biometra_joint_msg)
+        self.get_logger().info('Publishing joint states: "%s"' % str(joint_states))
 
 
 def main(args=None):
     rclpy.init(args=args)
     try:
-        pf400_joint_state_publisher = PF400DescriptionClient()
+        biometra_joint_state_publisher = BiometraDescriptionClient()
         executor = MultiThreadedExecutor()
-        executor.add_node(pf400_joint_state_publisher)
+        executor.add_node(biometra_joint_state_publisher)
 
         try:
-            pf400_joint_state_publisher.get_logger().info('Beginning client, shut down with CTRL-C')
+            biometra_joint_state_publisher.get_logger().info('Beginning client, shut down with CTRL-C')
             executor.spin()
         except KeyboardInterrupt:
-            pf400_joint_state_publisher.get_logger().info('Keyboard interrupt, shutting down.\n')
+            biometra_joint_state_publisher.get_logger().info('Keyboard interrupt, shutting down.\n')
         finally:
             executor.shutdown()
-            pf400_joint_state_publisher.destroy_node()
+            biometra_joint_state_publisher.destroy_node()
     finally:
         rclpy.shutdown()
 
