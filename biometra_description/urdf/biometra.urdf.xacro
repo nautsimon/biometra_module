@@ -71,20 +71,20 @@
 
   <!-- Joints -->
 
-  <joint name="Biometra_Cap" type="fixed">
+  <joint name="Biometra_Cap" type="revolute">
     <parent link="${prefix}biometra_base"/>
     <child link="${prefix}biometra_cap"/>
     <axis xyz="-1 0 0"/>
-    <origin xyz="0 0.466 1.05" rpy="0.4 0 0"/>
-    <limit effort="1000.0" lower="1.2" upper="1.2" velocity="0.5"/>
+    <origin xyz="0 0.466 1.05" rpy="1.5708 0 0"/>
+    <limit effort="1000.0" lower="0.0" upper="1.2" velocity="0.5"/>
   </joint>
 
-  <joint name="Biometra_Cap2" type="prismatic">
+  <joint name="Biometra_Cap2" type="revolute">
     <parent link="${prefix}biometra_base2"/>
     <child link="${prefix}biometra_cap2"/>
     <axis xyz="-1 0 0"/>
     <origin xyz="0 0.466 1.05" rpy="1.5708 0 0"/>
-    <limit effort="1000.0" lower="0" upper="1.2" velocity="0.5"/>
+    <limit effort="1000.0" lower="0.0" upper="1.2" velocity="0.5"/>
   </joint>
 
   </xacro:macro>
