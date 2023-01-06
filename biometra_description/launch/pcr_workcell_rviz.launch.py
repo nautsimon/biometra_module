@@ -11,9 +11,9 @@ from launch_ros.substitutions import FindPackageShare
  
 def generate_launch_description():
 
-  pkg_share = FindPackageShare(package='pf400_description').find('pf400_description')
-  default_rviz_config_path = os.path.join(pkg_share, 'config/pcr_workcell_config.rviz') 
-  default_urdf_model_path = os.path.join(pkg_share, 'urdf/pcr_workcell.urdf.xacro') 
+  pkg_share = FindPackageShare(package='biometra_description').find('biometra_description')
+  default_rviz_config_path = os.path.join(pkg_share, 'config/biometra_rviz_config.rviz') 
+  default_urdf_model_path = os.path.join(pkg_share, 'urdf/biometra_rviz.urdf.xacro') 
  
   
   fake_hardware = LaunchConfiguration('fake_hardware')
@@ -79,11 +79,11 @@ def generate_launch_description():
     arguments=['-d', rviz_config_file])
 
   # Start RealHarware Joint State Publisher Client
-  start_pf400_description_client = Node(
+  start_biometra_description_client = Node(
     condition=UnlessCondition(fake_hardware),
-    package = "pf400_description",
-    executable = 'pf400_description_client',
-    name = 'PF400DescriptionNode',
+    package = "biometra_description",
+    executable = 'biometra_description_client',
+    name = 'BiometraDescriptionNode',
     output = 'screen'
   )
    
@@ -102,6 +102,6 @@ def generate_launch_description():
   ld.add_action(start_joint_state_publisher_fake_hardware_node)
   ld.add_action(start_robot_state_publisher_cmd)
   ld.add_action(start_rviz_cmd)
-  ld.add_action(start_pf400_description_client)
+  ld.add_action(start_biometra_description_client)
   
   return ld
