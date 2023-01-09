@@ -13,7 +13,7 @@ def generate_launch_description():
 
   pkg_share = FindPackageShare(package='biometra_description').find('biometra_description')
   default_rviz_config_path = os.path.join(pkg_share, 'config/biometra_rviz_config.rviz') 
-  default_urdf_model_path = os.path.join(pkg_share, 'urdf/biometra_robot.xacro') 
+  default_urdf_model_path = os.path.join(pkg_share, 'urdf/biometra_module.xacro') 
  
   
   fake_hardware = LaunchConfiguration('fake_hardware')
