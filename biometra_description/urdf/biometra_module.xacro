@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="Thermocycler_Robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="Biometra_Robots" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
  <!-- Materials -->
   <xacro:include filename="$(find biometra_description)/urdf/materials.xacro" />
@@ -8,21 +8,21 @@
   <xacro:include filename="$(find biometra_description)/urdf/module_carts.urdf.xacro" />
   <xacro:Module_Carts prefix="module_carts/"/>
 
-  <!-- Sealer -->
+  <!-- Biometra -->
   <xacro:include filename="$(find biometra_description)/urdf/biometra.urdf.xacro" />
-  <xacro:Thermocycler prefix="thermocycler/"/>
+  <xacro:Biometra prefix="biometra/"/>
 
-  <joint name="Thermocycler_Base" type="fixed">
+  <joint name="Biometra_Base" type="fixed">
     <parent link="module_carts/cart_2"/>
-    <child link="thermocycler/thermocycler_base"/>
+    <child link="biometra/biometra_base"/>
     <axis xyz="0 0 0"/>
     <origin xyz="0.2 -0.62 0" rpy="0 0 0"/>
     <limit effort="1000.0" lower="0" upper="0" velocity="0.5"/>
   </joint>
 
-  <joint name="Thermocycler_Base2" type="fixed">
+  <joint name="Biometra_Base2" type="fixed">
     <parent link="module_carts/cart_2"/>
-    <child link="thermocycler/thermocycler_base2"/>
+    <child link="biometra/biometra_base2"/>
     <axis xyz="0 0 0"/>
     <origin xyz="-0.1 -0.62 0" rpy="0 0 0"/>
     <limit effort="1000.0" lower="0" upper="0" velocity="0.5"/>
