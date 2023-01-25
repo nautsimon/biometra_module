@@ -11,25 +11,25 @@ from time import sleep
 
 from biometra_driver.biometra_driver import biometra_trobot
 
-class biometraNode(Node):
+class BiometraClient(Node):
     '''
     The biometraNode inputs data from the 'action' topic, providing a set of commands for the driver to execute. It then receives feedback, 
     based on the executed command and publishes the state of the biometra and a description of the biometra to the respective topics.
     '''
-    def __init__(self, NODE_NAME = "biometraNode"):
+    def __init__(self, TEMP_NODE_NAME = "BiometraNode"):
         '''
         The init function is neccesary for the biometraNode class to initialize all variables, parameters, and other functions.
         Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
         '''
 
-        super().__init__(NODE_NAME)
+        super().__init__(TEMP_NODE_NAME)
         
         self.biometra = biometra_trobot()
         self.state = "READY"
 
         
         self.description = {
-            'name': NODE_NAME,
+            'name': TEMP_NODE_NAME,
             'type': 'biometra_thermocicler',
             'actions':
             {
@@ -44,8 +44,8 @@ class biometraNode(Node):
         self.statePub = self.create_publisher(String, 'biometra_state', 10)
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)
 
-        self.actionSrv = self.create_service(WeiActions, NODE_NAME + "/action_handler", self.actionCallback)
-        self.descriptionSrv = self.create_service(WeiDescription, NODE_NAME + "/description_handler", self.descriptionCallback)
+        self.actionSrv = self.create_service(WeiActions, TEMP_NODE_NAME + "/action_handler", self.actionCallback)
+        self.descriptionSrv = self.create_service(WeiDescription, TEMP_NODE_NAME + "/description_handler", self.descriptionCallback)
 
     def descriptionCallback(self, request, response):
         """The descriptionCallback function is a service that can be called to showcase the available actions a robot
@@ -108,9 +108,8 @@ class biometraNode(Node):
         self.state = "READY"
 
 def main(args = None):
-    NAME = "biometraNode"
     rclpy.init(args=args)  # initialize Ros2 communication
-    node = biometraNode(NODE_NAME=NAME)
+    node = BiometraClient()
     rclpy.spin(node)     # keep Ros2 communication open for action node
     rclpy.shutdown()     # kill Ros2 communication
 
