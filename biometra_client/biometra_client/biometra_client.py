@@ -105,7 +105,7 @@ class BiometraClient(Node):
             msg.data = 'State: %s' % self.state
             self.statePub.publish(msg)
             self.get_logger().error(msg.data)
-            self.get_logger().warn("Trying to connect again! PORT: " + str(self.PORT))
+            self.get_logger().warn("Trying to connect again! PORT: " + str(self.port))
             self.connect_robot()
 
     def descriptionCallback(self, request, response):
