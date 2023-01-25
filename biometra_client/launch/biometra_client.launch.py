@@ -7,14 +7,23 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
 
-    launch_d = LaunchDescription()
-    
+    port = LaunchConfiguration('port')
+
+    declare_use_port_cmd = DeclareLaunchArgument(
+        name='port',
+        default_value="10100",
+        description='Flag to accept port number')
+
     biometra_client = Node(
             package = 'biometra_client',
             namespace = 'std_ns',
             executable = 'biometra_client',
             output = "screen",
             name='BiometraNode',
-            parameters[{}]
+            parameters = [{"port":port}],
+            emulate_tty=True
+
         )
-    
+
+    launch_d = LaunchDescription()
+
