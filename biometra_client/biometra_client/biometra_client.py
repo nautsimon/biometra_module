@@ -2,6 +2,9 @@
 
 import rclpy                 # import Rospy
 from rclpy.node import Node  # import Rospy Node
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor, SingleThreadedExecutor
+
 from std_msgs.msg import String
 
 from wei_services.srv import WeiDescription 
@@ -23,13 +26,18 @@ class BiometraClient(Node):
         '''
 
         super().__init__(TEMP_NODE_NAME)
-        
-        self.biometra = biometra_trobot()
+        node_name = self.get_name()
+
+        self.declare_parameter("port",8085)
+        self.port = self.get_parameter("port").get_parameter_value().integer_value
+        self.get_logger().info("Received Port:" + str(self.port))
+
         self.state = "READY"
 
+        self.connect_robot()
         
         self.description = {
-            'name': TEMP_NODE_NAME,
+            'name': node_name,
             'type': 'biometra_thermocicler',
             'actions':
             {
@@ -41,11 +49,30 @@ class BiometraClient(Node):
         }
 
         timer_period = 1  # seconds
-        self.statePub = self.create_publisher(String, 'biometra_state', 10)
+        self.statePub = self.create_publisher(String, node_name + '/state', 10)
         self.stateTimer = self.create_timer(timer_period, self.stateCallback)
 
-        self.actionSrv = self.create_service(WeiActions, TEMP_NODE_NAME + "/action_handler", self.actionCallback)
-        self.descriptionSrv = self.create_service(WeiDescription, TEMP_NODE_NAME + "/description_handler", self.descriptionCallback)
+        self.actionSrv = self.create_service(WeiActions, node_name + "/action_handler", self.actionCallback)
+        self.descriptionSrv = self.create_service(WeiDescription, node_name + "/description_handler", self.descriptionCallback)
+
+    def connect_robot(self):
+        try:
+            self.biometra = biometra_trobot()
+        except Exception as error_msg:
+            self.state = "BIOMETRA CONNECTION ERROR"
+            self.get_logger().error("------- BIOMETRA Error message: " + str(error_msg) +  (" -------"))
+        else:
+            self.get_logger().info("Biometra is online")
+
+    def stateCallback(self):
+        '''
+        Publishes the biometra state to the 'state' topic. 
+        '''
+        msg = String()
+        msg.data = 'State: %s' % self.state
+        self.statePub.publish(msg)
+        self.get_logger().info('Publishing: "%s"' % msg.data)
+        self.state = "READY"
 
     def descriptionCallback(self, request, response):
         """The descriptionCallback function is a service that can be called to showcase the available actions a robot
@@ -97,15 +124,7 @@ class BiometraClient(Node):
 
         return response
 
-    def stateCallback(self):
-        '''
-        Publishes the biometra state to the 'state' topic. 
-        '''
-        msg = String()
-        msg.data = 'State: %s' % self.state
-        self.statePub.publish(msg)
-        self.get_logger().info('Publishing: "%s"' % msg.data)
-        self.state = "READY"
+
 
 def main(args = None):
     rclpy.init(args=args)  # initialize Ros2 communication
