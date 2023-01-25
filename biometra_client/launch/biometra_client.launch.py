@@ -10,6 +10,6 @@ def generate_launch_description():
             namespace = 'std_ns',
             executable = 'biometra_client',
             output = "screen",
-            name='biometraNode'
-        ),
-    ])
+            name='BiometraNode'
+        )
+    
