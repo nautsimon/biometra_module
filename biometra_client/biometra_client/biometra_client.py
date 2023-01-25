@@ -35,6 +35,10 @@ class BiometraClient(Node):
         self.state = "READY"
 
         self.connect_robot()
+
+        action_cb_group = ReentrantCallbackGroup()
+        description_cb_group = ReentrantCallbackGroup()
+        state_cb_group = ReentrantCallbackGroup()
         
         self.description = {
             'name': node_name,
@@ -50,10 +54,10 @@ class BiometraClient(Node):
 
         timer_period = 1  # seconds
         self.statePub = self.create_publisher(String, node_name + '/state', 10)
-        self.stateTimer = self.create_timer(timer_period, self.stateCallback)
+        self.stateTimer = self.create_timer(timer_period, self.stateCallback, callback_group = state_cb_group)
 
-        self.actionSrv = self.create_service(WeiActions, node_name + "/action_handler", self.actionCallback)
-        self.descriptionSrv = self.create_service(WeiDescription, node_name + "/description_handler", self.descriptionCallback)
+        self.actionSrv = self.create_service(WeiActions, node_name + "/action_handler", self.actionCallback, callback_group = action_cb_group)
+        self.descriptionSrv = self.create_service(WeiDescription, node_name + "/description_handler", self.descriptionCallback, callback_group = description_cb_group)
 
     def connect_robot(self):
         try:
@@ -127,10 +131,22 @@ class BiometraClient(Node):
 
 
 def main(args = None):
+    
     rclpy.init(args=args)  # initialize Ros2 communication
-    node = BiometraClient()
-    rclpy.spin(node)     # keep Ros2 communication open for action node
-    rclpy.shutdown()     # kill Ros2 communication
+    try:
+        biometra_client = BiometraClient()
+        executor = MultiThreadedExecutor()
+        executor.add_node(biometra_client)
 
+        try:
+            biometra_client.get_logger().info('Beginning client, shut down with CTRL-C')
+            executor.spin()
+        except KeyboardInterrupt:
+            biometra_client.get_logger().info('Keyboard interrupt, shutting down.\n')
+        finally:
+            executor.shutdown()
+            biometra_client.destroy_node()
+    finally:
+        rclpy.shutdown()
 if __name__ == '__main__':
     main()
