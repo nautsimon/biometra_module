@@ -73,10 +73,40 @@ class BiometraClient(Node):
         Publishes the biometra state to the 'state' topic. 
         '''
         msg = String()
-        msg.data = 'State: %s' % self.state
-        self.statePub.publish(msg)
-        self.get_logger().info('Publishing: "%s"' % msg.data)
-        self.state = "READY"
+
+        try:
+            state = self.biometra.get_state() 
+
+        except Exception as err:
+            self.get_logger().error("BIOMETRA IS NOT RESPONDING! ERROR: " + str(err))
+            self.state = "BIOMETRA CONNECTION ERROR"
+
+
+        if self.state != "BIOMETRA CONNECTION ERROR":
+            #TODO: EDIT THE DRIVER TO RECEIVE ACTUAL ROBOT STATUS
+            if state == "Ready":
+                self.state = "READY"
+                msg.data = 'State: %s' % self.state
+                self.statePub.publish(msg)
+                self.get_logger().info(msg.data)
+
+            elif state == "RUNNING":
+                self.state = "BUSY"
+                msg.data = 'State: %s' % self.state
+                self.statePub.publish(msg)
+                self.get_logger().info(msg.data)
+
+            elif state == "ERROR":
+                self.state = "ERROR"
+                msg.data = 'State: %s' % self.state
+                self.statePub.publish(msg)
+                self.get_logger().error(msg.data)
+        else:
+            msg.data = 'State: %s' % self.state
+            self.statePub.publish(msg)
+            self.get_logger().error(msg.data)
+            self.get_logger().warn("Trying to connect again! PORT: " + str(self.PORT))
+            self.connect_robot()
 
     def descriptionCallback(self, request, response):
         """The descriptionCallback function is a service that can be called to showcase the available actions a robot
@@ -131,7 +161,7 @@ class BiometraClient(Node):
 
 
 def main(args = None):
-    
+
     rclpy.init(args=args)  # initialize Ros2 communication
     try:
         biometra_client = BiometraClient()
