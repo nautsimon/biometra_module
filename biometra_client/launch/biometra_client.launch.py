@@ -26,4 +26,7 @@ def generate_launch_description():
         )
 
     launch_d = LaunchDescription()
+    launch_d.add_action(declare_use_port_cmd)
+    launch_d.add_action(biometra_client)
 
+    return launch_d
