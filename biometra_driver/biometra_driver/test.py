@@ -40,6 +40,7 @@ login_cmds = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.LoginOutCmds(se
 tcda_cmds = BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses.TcdaCmds(settings.CommunicationSettings, device_desc)
 
 data_set_list = BiometraLibrary.HelperClasses.DataSetHelperClasses.DataSetList
+program_infos_to_show = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgramInfosToShow
 
 
 def check_error(err):
