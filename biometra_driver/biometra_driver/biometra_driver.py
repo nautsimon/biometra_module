@@ -22,7 +22,7 @@ class biometra_trobot():
         self.program_cmds = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgramCmds(self.settings.CommunicationSettings, self.device_desc)
 
         # self.fileInfo = BiometraLibrary.DeviceExtComClasses.DeviceComClasses.DeviceComParams
-        self.DataSetList = BiometraLibrary.HelperClasses.DataSetHelperClasses.DataSetList
+        #self.DataSetList = BiometraLibrary.HelperClasses.DataSetHelperClasses.DataSetList
 
         self.login_user()
 

@@ -33,14 +33,14 @@ block_n = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses.Bloc
 
 program_cmds = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgramCmds(settings.CommunicationSettings, device_desc)
 pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram
-program_file_worker = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker
+# program_file_worker = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker()
 
 login_cmds = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.LoginOutCmds(settings.CommunicationSettings,device_desc)
 
 tcda_cmds = BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses.TcdaCmds(settings.CommunicationSettings, device_desc)
 
-data_set_list = BiometraLibrary.HelperClasses.DataSetHelperClasses.DataSetList
-program_infos_to_show = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgramInfosToShow
+#data_set_list = BiometraLibrary.HelperClasses.DataSetHelperClasses.DataSetList
+#program_infos_to_show = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgramInfosToShow
 
 
 def check_error(err):
@@ -59,11 +59,19 @@ def list_programs():
     err, program_list = program_cmds.GetProgramOverview(device_desc,user)
     print(program_list.ToString())
 
-def create_program():
-    checkStateResult = program_file_worker.ReadAllProgramTemplateInfosToShow(data_set_list)
+def read_all_program_templates():
+    program_file_worker = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker()
+    program_infos_to_show, prog_template_list = program_file_worker.ReadAllProgramTemplateInfosToShow()
+    return program_infos_to_show, prog_template_list
 
-def create_pcr_program():
-    pass
+def create_program():
+    infos_to_show, template_list = read_all_program_templates()
+    # check to make sure there's a least one template, if not, maybe create one?
+    if len(template_list.DataList) == 0: # maybe use template_list.CheckIfDataAvailable()
+        #create new, blank template
+        pass
+    #TODO: need way of either specifying template, or always selecting blank one and creating from scratch
+    pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram()
 
 def run_pcr_program(prog):
     prog_type = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.EnProgramType.TYPE_PROGRAM
@@ -108,6 +116,8 @@ def get_lid_state():
         print("The lid is closed on thermocycler " + f"{device_desc}")
     else:
         print("The lid is currently moving on thermocycler " + f"{device_desc}")
+
+#a, b = program_cmds.GetAllTemplatePrograms(device_desc)
 
 #GetDeviceBlockInfo maybe just block info from gui?
 #GetHoldTime
