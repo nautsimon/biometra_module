@@ -32,15 +32,17 @@ block_cmds = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockCmds(settings
 block_n = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses.BlockNumber(1)
 
 program_cmds = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgramCmds(settings.CommunicationSettings, device_desc)
-pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram
+# pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram
 # program_file_worker = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker()
 
 login_cmds = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.LoginOutCmds(settings.CommunicationSettings,device_desc)
 
 tcda_cmds = BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses.TcdaCmds(settings.CommunicationSettings, device_desc)
-
+#program_number = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.ProgramNumber
 #data_set_list = BiometraLibrary.HelperClasses.DataSetHelperClasses.DataSetList
 #program_infos_to_show = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgramInfosToShow
+#blank_template = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgramName.PROG_NAME_BLANK_P
+# prog_name = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgramName()
 
 
 def check_error(err):
@@ -65,13 +67,36 @@ def read_all_program_templates():
     return program_infos_to_show, prog_template_list
 
 def create_program():
-    infos_to_show, template_list = read_all_program_templates()
+    # infos_to_show, template_list = read_all_program_templates()
     # check to make sure there's a least one template, if not, maybe create one?
-    if len(template_list.DataList) == 0: # maybe use template_list.CheckIfDataAvailable()
-        #create new, blank template
-        pass
+    # if len(template_list.DataList) == 0: # maybe use template_list.CheckIfDataAvailable()
+    #     #create new, blank template
+    #     pass
     #TODO: need way of either specifying template, or always selecting blank one and creating from scratch
+    
     pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram()
+    
+    # create block number TODO
+    en_block_number = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses.EnBlockTypeNumber
+    block_type = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses.BlockType
+    
+    # set name of program
+    prog_name = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgramName("programName")
+    # prog_name.set_Value = ("programname")
+    pcrProgram.ProgramEditInfo.ProgName = prog_name
+    
+    # set user directory of program (admin user)
+    pcrProgram.ProgramEditInfo.UserDirectory = user
+    
+    # creation date, must be format dd.MM.yyyy HH:mm:ss system.datetime
+    
+    #create lid settings and lid temperature
+    lid_temp = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgHeadClasses.LidTemperature("50 °C", pcrProgram.ProgramHeadInfo.BlockTyp.BlockTypData)
+    # lid_settings
+    
+ # 0000 0000 0010 0000 - before run
+ # 0000 0000 0100 0001 - run started
+ # 0000 0000 0110 0000 - run stopped
 
 def run_pcr_program(prog):
     prog_type = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.EnProgramType.TYPE_PROGRAM
@@ -116,6 +141,7 @@ def get_lid_state():
         print("The lid is closed on thermocycler " + f"{device_desc}")
     else:
         print("The lid is currently moving on thermocycler " + f"{device_desc}")
+    #return -1,0,1 
 
 #a, b = program_cmds.GetAllTemplatePrograms(device_desc)
 
@@ -129,6 +155,13 @@ def get_lid_state():
 #StartProgramOnBlock
 #UpdateDeviceNameFromDeviceDescription
 
+# zeros in get params data = loop counters
+
+#progtype_standard = getdeviceprogtype
+#getnumofblocks = 1
+#getnumofcontrollers = 3
+# getprogramstep = 00 (after time)
+#2nd time = getholdtime
 
 def check_temp_left():
     err, temp = tcda_cmds.GetBlockTempLeft(device_desc, block_n)
@@ -158,6 +191,7 @@ def check_temp_all():
     left = check_temp_left()
     right = check_temp_right()
     middle = check_temp_middle()
+    lid = check_temp_lid()
     all_temps = [left, middle, right]
-    print("The combined tempratures of thermocycler " + f"{device_desc}" + " is " +f"{all_temps[0]}, {all_temps[1]}, {all_temps[2]}")
+    print("The combined tempratures of thermocycler " + f"{device_desc}" + " is " +f"{all_temps[0]}, {all_temps[1]}, {all_temps[2]} " + "with a lid temperature of " + f"{lid}")
     return all_temps
