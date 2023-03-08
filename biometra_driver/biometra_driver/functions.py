@@ -5,7 +5,7 @@ dotnet_path = Path(__file__).resolve().parent / 'dotnet' / 'BiometraLibraryNet'
 clr.AddReference(str(dotnet_path))
 import BiometraLibrary 
 
-class biometra_trobot():
+class Functions():
     def __init__(self):
         self.settings =  BiometraLibrary.ApplicationClasses.ApplicationSettingsClasses.ApplicationSettings
         self.settings.LoadApplicationSettings()
@@ -20,9 +20,11 @@ class biometra_trobot():
         self.tcda_cmds = BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses.TcdaCmds(self.settings.CommunicationSettings, self.device_desc)
         
         self.program_cmds = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgramCmds(self.settings.CommunicationSettings, self.device_desc)
-
-        # self.fileInfo = BiometraLibrary.DeviceExtComClasses.DeviceComClasses.DeviceComParams
-        #self.DataSetList = BiometraLibrary.HelperClasses.DataSetHelperClasses.DataSetList
+        
+        self.lid_state = self.get_lid_state()
+        self.run_status = self.get_run_status()
+        self.run_time_left = self.get_time_left()
+        # self.plate_ready: whether or not the plate is ready to be removed
 
         self.login_user()
 
@@ -80,43 +82,120 @@ class biometra_trobot():
 
     def close_lid(self):
         self.block_cmds.CloseMotLid(self.device_desc,self.block_n)
+    
+    def plate_ready(self):
+        '''
+        determines whether or not a plate is ready to be removed from the biometra
+        returns:
+        0: ready to remove
+        1: not ready
+        -1: error
+        '''
+        pass
+        
+    def get_run_status(self):
+        '''
+        determines the current run state of the device, returns:
+        1: protool in progress
+        0: no protocol in progress
+        -1: unknown error
+        '''
+        
+        err, status = self.tcda_cmds.GetBlockState(self.device_desc, self.block_n)
+        self.check_error(err)
+        if str(status) == "0000 0000 0100 0001":
+            print("There is currently a protocol in progress on thermocycler " + f"{self.device_desc}")
+            return 1
+        elif str(status) == "0000 0000 0110 0000":
+            print("There is currently no protocol in progress on thermocycler " + f"{self.device_desc}")
+            return 0
+        else:
+            print("Unknown state of themrocycler " + f"{self.device_desc}")
+            return -1
         
     def get_lid_state(self):
+        '''
+        determines current state of lid.
+        returns:
+        1: lid closed
+        0: lid open
+        -1: lid in motion
+        '''
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
         self.check_error(err)
         if str(status) == "0000 0000 0000 0011":
             print("The lid is open on thermocycler " + f"{self.device_desc}")
+            return 0
         elif str(status) == "0000 0000 0000 0101":
             print("The lid is closed on thermocycler " + f"{self.device_desc}")
+            return 1
         else:
             print("The lid is currently moving on thermocycler " + f"{self.device_desc}")
+            return -1
 
+    def get_time_left(self):
+        '''
+        checks how much time is remaining in the current program
+        returns:
+        time: string of how much time is left: 00h 00m 00s
+        '''
+        # check to make sure there's a protocol underway
+        err, time = self.tcda_cmds.GetRemainingTime(self.device_desc, self.block_cmds)
+        self.check_error(err)
+        print("There is " + f"{time} " "left on thermocycler " + f"{self.device_desc}")
+        return time
 
+            
     def check_temp_left(self):
+        '''
+        checks the temperature on the left side of the block
+        returns:
+        temp (string)
+        '''
         err, temp = self.tcda_cmds.GetBlockTempLeft(self.device_desc, self.block_n)
         self.check_error(err)
         print("The left temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
         return temp
 
     def check_temp_right(self):
+        '''
+        checks the temperature on the right side of the block
+        returns:
+        temp (string)
+        '''
         err, temp = self.tcda_cmds.GetBlockTempRight(self.device_desc, self.block_n)
         self.check_error(err)
         print("The right temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
         return temp
 
     def check_temp_middle(self):
+        '''
+        checks the temperature on the middle of the block
+        returns:
+        temp (string)
+        '''
         err, temp = self.tcda_cmds.GetBlockTempMiddle(self.device_desc, self.block_n)
         self.check_error(err)
         print("The middle temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
         return temp
     
     def check_temp_lid(self):
+        '''
+        checks the temperature of the lid
+        returns:
+        temp (string)
+        '''
         err, temp = self.tcda_cmds.GetHeatedLidTemp(self.device_desc, self.block_n)
         self.check_error(err)
         print("The lid temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
         return temp
 
     def check_temp_all(self):
+        '''
+        returns the temperature of each side of the block and lid
+        returns:
+        temps: List[string]
+        '''
         left = self.check_temp_left()
         right = self.check_temp_right()
         middle = self.check_temp_middle()
@@ -125,7 +204,7 @@ class biometra_trobot():
         return all_temps
 
 if __name__ == "__main__":
-    test = biometra_trobot()
+    test = Functions()
     # test.lid_open()
     test.lid_close()
 

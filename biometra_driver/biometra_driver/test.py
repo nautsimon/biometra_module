@@ -132,16 +132,93 @@ def get_status():
     check_error(err)
     print('STATUS', status)
 
+
+def get_run_status():
+    '''
+    determines the current run state of the device, returns:
+    1: protool in progress
+    0: no protocol in progress
+    -1: unknown error
+    '''
+    
+    err, status = tcda_cmds.GetBlockState(device_desc, block_n)
+    check_error(err)
+    if str(status) == "0000 0000 0100 0001":
+        print("There is currently a protocol in progress on thermocycler " + f"{device_desc}")
+        return 1
+    elif str(status) == "0000 0000 0110 0000":
+        print("There is currently no protocol in progress on thermocycler " + f"{device_desc}")
+        return 0
+    else:
+        print("Unknown state of themrocycler " + f"{device_desc}")
+        return -1
+
 def get_lid_state():
+    '''
+    determines current state of lid.
+    returns:
+    1: lid closed
+    0: lid open
+    -1: lid in motion
+    '''
     err, status = tcda_cmds.GetMotLidState(device_desc, block_n)
     check_error(err)
     if str(status) == "0000 0000 0000 0011":
         print("The lid is open on thermocycler " + f"{device_desc}")
+        return 0
     elif str(status) == "0000 0000 0000 0101":
         print("The lid is closed on thermocycler " + f"{device_desc}")
+        return 1
     else:
         print("The lid is currently moving on thermocycler " + f"{device_desc}")
-    #return -1,0,1 
+        return -1
+
+def check_plate_avail():
+    '''
+    checkes the run progress, lid state, and temperature of the block in order 
+    to tell if plate is safe for retreival
+    returns:
+    1: plate available
+    0: run currently underway, wait
+    -1: error
+    '''
+    # check if run currently underway
+    run_status = get_run_status()
+    if run_status == 1:
+        time = get_time_left()
+        print("Run will complete in " + f"{time}, " + "waiting...")
+    elif run_status == 0:
+        # No current run, check if lid is open
+        lid_state = get_lid_state()
+        if lid_state == 1:
+            # lid closed, open lid, and wait
+            lid_open()
+        elif lid_state == -1:
+            print("Lid is in motion, wait")
+        elif lid_state == 0:
+            # lid is open, check temperature
+            pass
+        
+        
+    elif run_status == -1:
+        print("Error involving run status")
+        
+    
+def get_time_left():
+    '''
+    checks how much time is remaining in the current program
+    returns:
+    time: string of how much time is left: 00h 00m 00s
+    '''
+    # check to make sure there's a protocol underway
+    run_status = get_run_status()
+    if run_status == 1:
+        err, time = tcda_cmds.GetRemainingTime(device_desc, block_cmds)
+        check_error(err)
+        print("There is " + f"{time} " "left on thermocycler " + f"{device_desc}")
+        return time
+    else:
+        print("There is no protocol being run on thermocycler " + f"{device_desc}")
 
 #a, b = program_cmds.GetAllTemplatePrograms(device_desc)
 

@@ -1,13 +1,18 @@
-from __future__ import annotations
+import clr
+from pathlib import Path 
 
-import time
-from datetime import datetime, timedelta
-from typing import Optional
+dotnet_path = Path(__file__).resolve().parent / 'dotnet' / 'BiometraLibraryNet'
+clr.AddReference(str(dotnet_path))
+import BiometraLibrary 
 
-from biometra.errors import ErrorResponse
-from biometra.programs import BioProgram
+from biometra_driver.errors import ErrorResponse
+from biometra_driver.functions import Functions
 
-class Stx:
+
+class Biometra:
+    functions: Functions
+    
+    
     __serial_port: SerialPort
     __memory_map: MemoryMap
     plate_handler: PlateHandler
@@ -24,12 +29,9 @@ class Stx:
     """
 
     def __init__(self, serial_port: str):
-        self.__serial_port = SerialPort(serial_port, timeout=1)
-        self.__memory_map = MemoryMap(self.__serial_port)
-        self.plate_handler = PlateHandler(self.__memory_map)
-        self.shaker_controller = ShakerController(self.__memory_map)
-        self.climate_controller = ClimateController(self.__memory_map)
-
+        self.functions = Functions()
+        
+        
     @property
     def ready(self) -> bool:
         """True if the device is not busy"""
