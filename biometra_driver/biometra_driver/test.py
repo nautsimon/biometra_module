@@ -95,8 +95,8 @@ def create_program():
     # lid_settings
     
  # 0000 0000 0010 0000 - before run
- # 0000 0000 0100 0001 - run started
- # 0000 0000 0110 0000 - run stopped
+ # 0000 0000 0100 0001 - run started (Run, Preheat), then Run, plateau
+ # 0000 0000 0110 0000 - run stopped (cool_heat preheat) after stop, (plateau, cool_heat)
 
 def run_pcr_program(prog):
     prog_type = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.EnProgramType.TYPE_PROGRAM
@@ -213,7 +213,7 @@ def get_time_left():
     # check to make sure there's a protocol underway
     run_status = get_run_status()
     if run_status == 1:
-        err, time = tcda_cmds.GetRemainingTime(device_desc, block_cmds)
+        err, time = tcda_cmds.GetRemainingTime(device_desc, block_n)
         check_error(err)
         print("There is " + f"{time} " "left on thermocycler " + f"{device_desc}")
         return time
@@ -239,6 +239,13 @@ def get_time_left():
 #getnumofcontrollers = 3
 # getprogramstep = 00 (after time)
 #2nd time = getholdtime
+
+# getmotlidstate.motlidstateflags = meaning of number value
+#canopen/closelid
+
+
+# run_status.ActiveBlock = bool whether current run
+#status.
 
 def check_temp_left():
     err, temp = tcda_cmds.GetBlockTempLeft(device_desc, block_n)

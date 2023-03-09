@@ -1,5 +1,6 @@
 import clr
-from pathlib import Path 
+from pathlib import Path
+import time as time 
 
 dotnet_path = Path(__file__).resolve().parent / 'dotnet' / 'BiometraLibraryNet'
 clr.AddReference(str(dotnet_path))
@@ -21,10 +22,11 @@ class Functions():
         
         self.program_cmds = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgramCmds(self.settings.CommunicationSettings, self.device_desc)
         
+        self.error_log_cmds = BiometraLibrary.DeviceExtComClasses.SystemClasses.ErrorLogClasses.ErrorLogCmds(self.settings.CommunicationSettings, self.device_desc)
+        
         self.lid_state = self.get_lid_state()
         self.run_status = self.get_run_status()
         self.run_time_left = self.get_time_left()
-        # self.plate_ready: whether or not the plate is ready to be removed
 
         self.login_user()
 
@@ -78,11 +80,19 @@ class Functions():
         self.check_error(err)
     
     def open_lid(self):
-        self.block_cmds.OpenMotLid(self.device_desc,self.block_n)
+        err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
+        self.check_error(err)
+        if status.CanOpenLid == True:
+            self.block_cmds.OpenMotLid(self.device_desc,self.block_n)
+        # else: self.error == "Lid already open"
 
     def close_lid(self):
-        self.block_cmds.CloseMotLid(self.device_desc,self.block_n)
-    
+        err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
+        self.check_error(err)
+        if status.CanCloseLid == True:
+            self.block_cmds.CloseMotLid(self.device_desc,self.block_n)
+        # else:
+        #     self.error == "Lid already closed"
     def plate_ready(self):
         '''
         determines whether or not a plate is ready to be removed from the biometra
@@ -91,7 +101,51 @@ class Functions():
         1: not ready
         -1: error
         '''
-        pass
+        # check if there is a protocol running on thermocycler
+        run_status = self.get_run_status()
+        if run_status == 1:
+            print("Protocol still in progress, waiting...")
+            # TODO: function to convert datetime into readable time to wait for
+            return 1
+        elif run_status == -1:
+            print("Error in run")
+            return -1
+        elif run_status == 0:
+            #no protocol in progress, check lid status
+            lid_status = self.get_lid_state()
+            if lid_status == 1:
+                # lid is closed
+                self.open_lid()
+                print("lid is closed, opening lid")
+                return 1 # takes approx. 20 seconds to open lid
+            elif lid_status == -1:
+                print("lid is in motion")
+                return 1
+            elif lid_status == 0:
+                # lid is open, make sure temperature is cool enough to retreive plate
+                lid_temp = float(str(self.check_temp_lid())[:-2])
+                right_temp = float(str(self.check_temp_right())[:-2])
+                left_temp = float(str(self.check_temp_left())[:-2])
+                mid_temp = float(str(self.check_temp_middle())[:-2])
+                
+                if lid_temp > 50:
+                    print("Lid temp at " + f"{lid_temp} " + "deg C, cooling...")
+                    return 1
+                elif mid_temp > 50:
+                    print("Mid block temp at " + f"{mid_temp} " + "deg C, cooling...")
+                    return 1
+                elif right_temp > 50:
+                    print("Right block temp at " + f"{lid_temp} " + "deg C, cooling...")
+                    return 1
+                elif left_temp > 50:
+                    print("Left block temp at " + f"{lid_temp} " + "deg C, cooling...")
+                    return 1
+                else:
+                    print("Block cool, plate available")
+                    return 0
+            
+            
+            
         
     def get_run_status(self):
         '''
@@ -103,15 +157,16 @@ class Functions():
         
         err, status = self.tcda_cmds.GetBlockState(self.device_desc, self.block_n)
         self.check_error(err)
-        if str(status) == "0000 0000 0100 0001":
+        if status.ActiveBlock == True:
             print("There is currently a protocol in progress on thermocycler " + f"{self.device_desc}")
             return 1
-        elif str(status) == "0000 0000 0110 0000":
+        elif status.ActiveBlock == False:
             print("There is currently no protocol in progress on thermocycler " + f"{self.device_desc}")
             return 0
         else:
             print("Unknown state of themrocycler " + f"{self.device_desc}")
             return -1
+            
         
     def get_lid_state(self):
         '''
@@ -140,10 +195,49 @@ class Functions():
         time: string of how much time is left: 00h 00m 00s
         '''
         # check to make sure there's a protocol underway
-        err, time = self.tcda_cmds.GetRemainingTime(self.device_desc, self.block_cmds)
+        err, time = self.tcda_cmds.GetRemainingTime(self.device_desc, self.block_n)
         self.check_error(err)
         print("There is " + f"{time} " "left on thermocycler " + f"{self.device_desc}")
         return time
+    
+    def countdown(self):
+        """
+        checks the time remaining in the protocol, and converts it into seconds to sleep until protocol completes 
+        """
+        hours = 0
+        mins = 0
+        secs = 0
+        total_secs = 0
+        time = self.get_time_left()
+        print("waiting...")
+        time = time.split(' ')
+        for i in range(len(time)):
+            time[i] = int(time[i][:-1])
+        hours = time[0] * 3600
+        mins = time[1] * 60
+        secs = time[2]    
+        total_secs = hours + mins + secs
+        time.sleep(total_secs)
+            
+        def wait_until_ready(self) -> int:
+            """
+            Calls plate ready until the plate is made available
+
+            Parameters
+            ----------
+            None
+            
+            """
+            plate_status = 1
+            while plate_status == 1:
+                plate_status = self.plate_ready()
+            
+                if plate_status == -1:
+                    self.get_error() # TODO
+                    return -1
+            if plate_status == 0:
+                print("Plate is ready to be retreived")
+                return 0
 
             
     def check_temp_left(self):
@@ -154,7 +248,7 @@ class Functions():
         '''
         err, temp = self.tcda_cmds.GetBlockTempLeft(self.device_desc, self.block_n)
         self.check_error(err)
-        print("The left temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
+        # print("The left temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
         return temp
 
     def check_temp_right(self):
@@ -165,7 +259,7 @@ class Functions():
         '''
         err, temp = self.tcda_cmds.GetBlockTempRight(self.device_desc, self.block_n)
         self.check_error(err)
-        print("The right temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
+        # print("The right temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
         return temp
 
     def check_temp_middle(self):
@@ -176,7 +270,7 @@ class Functions():
         '''
         err, temp = self.tcda_cmds.GetBlockTempMiddle(self.device_desc, self.block_n)
         self.check_error(err)
-        print("The middle temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
+        # print("The middle temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
         return temp
     
     def check_temp_lid(self):
@@ -187,7 +281,7 @@ class Functions():
         '''
         err, temp = self.tcda_cmds.GetHeatedLidTemp(self.device_desc, self.block_n)
         self.check_error(err)
-        print("The lid temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
+        # print("The lid temprature of thermocycler " + f"{self.device_desc}" + " is " +f"{temp}")
         return temp
 
     def check_temp_all(self):
