@@ -2,11 +2,12 @@ import clr
 from pathlib import Path
 import time as time 
 
+
 dotnet_path = Path(__file__).resolve().parent / 'dotnet' / 'BiometraLibraryNet'
 clr.AddReference(str(dotnet_path))
 import BiometraLibrary 
 
-class Functions():
+class Functions:
     def __init__(self):
         self.settings =  BiometraLibrary.ApplicationClasses.ApplicationSettingsClasses.ApplicationSettings
         self.settings.LoadApplicationSettings()
@@ -14,29 +15,19 @@ class Functions():
 
         self.info = BiometraLibrary.DeviceExtComClasses.SystemClasses.InfoClasses.InfoCmds          
         self.device_desc = self.find_device()
+        self.login_user()
 
         self.block_cmds = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockCmds(self.settings.CommunicationSettings, self.device_desc)
         self.block_n = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses.BlockNumber(1)
-        
         self.tcda_cmds = BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses.TcdaCmds(self.settings.CommunicationSettings, self.device_desc)
-        
         self.program_cmds = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgramCmds(self.settings.CommunicationSettings, self.device_desc)
-        
         self.error_log_cmds = BiometraLibrary.DeviceExtComClasses.SystemClasses.ErrorLogClasses.ErrorLogCmds(self.settings.CommunicationSettings, self.device_desc)
         
         self.lid_state = self.get_lid_state()
         self.run_status = self.get_run_status()
         self.run_time_left = self.get_time_left()
-
-        self.login_user()
-
-    def check_error(self, err):
-        if err:
-            self.error = err
-            print(err)
-            return -1
-        return 0
-
+        
+        
     def find_device(self):
         n, avail = self.info.GetAllComAvailableDevices()
         device_desc = avail.get_DataList().get_Item(0).DeviceInfos.DeviceDescriptionInfo
@@ -44,10 +35,19 @@ class Functions():
     
     def login_user(self):
         login = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.LoginOutCmds(self.settings.CommunicationSettings,self.device_desc)
-        user =  BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses.UserInitials('ADM')
-        passwd = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses.UserPassword('Admin')
-        err = login.LoginUser(self.device_desc,user,passwd)
+        self.user =  BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses.UserInitials('ADM')
+        self.passwd = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses.UserPassword('Admin')
+        err = login.LoginUser(self.device_desc,self.user,self.passwd)
         return self.check_error(err)
+
+    def check_error(self, err):
+        if err:
+            self.error = err
+            print(err)
+            return -1
+        return 0
+    #TODO: more sophisticated, maybe gets called from "get error" in main
+
     
     def create_program(self):
         # self.file = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker(self.fileInfo)
@@ -65,11 +65,13 @@ class Functions():
 
     def list_programs(self):
         err, program_list = self.program_cmds.GetProgramOverview(self.device_desc, self.user)
+        print(program_list)
 
     def create_pcr_program():
         pass
 
     def run_pcr_program(self, prog):
+        self.close_lid()
         prog_type = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.EnProgramType.TYPE_PROGRAM
         program_n = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.ProgramNumber(prog, prog_type)
         err = self.block_cmds.StartProgramOnBlock(self.device_desc, self.user, program_n, self.block_n, True)
@@ -83,14 +85,18 @@ class Functions():
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
         self.check_error(err)
         if status.CanOpenLid == True:
+            print("Opening Lid")
             self.block_cmds.OpenMotLid(self.device_desc,self.block_n)
+            time.sleep(20)
         # else: self.error == "Lid already open"
 
     def close_lid(self):
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
         self.check_error(err)
         if status.CanCloseLid == True:
+            print("Closing Lid")
             self.block_cmds.CloseMotLid(self.device_desc,self.block_n)
+            time.sleep(20)
         # else:
         #     self.error == "Lid already closed"
     def plate_ready(self):
@@ -105,7 +111,6 @@ class Functions():
         run_status = self.get_run_status()
         if run_status == 1:
             print("Protocol still in progress, waiting...")
-            # TODO: function to convert datetime into readable time to wait for
             return 1
         elif run_status == -1:
             print("Error in run")
@@ -120,6 +125,7 @@ class Functions():
                 return 1 # takes approx. 20 seconds to open lid
             elif lid_status == -1:
                 print("lid is in motion")
+                time.sleep(5)
                 return 1
             elif lid_status == 0:
                 # lid is open, make sure temperature is cool enough to retreive plate
@@ -208,36 +214,37 @@ class Functions():
         mins = 0
         secs = 0
         total_secs = 0
-        time = self.get_time_left()
+        time_left = self.get_time_left()
         print("waiting...")
-        time = time.split(' ')
-        for i in range(len(time)):
-            time[i] = int(time[i][:-1])
-        hours = time[0] * 3600
-        mins = time[1] * 60
-        secs = time[2]    
+        time_left = str(time_left)
+        time_left = time_left.split(' ')
+        for i in range(len(time_left)):
+            time_left[i] = int(time_left[i][:-1])
+        hours = time_left[0] * 3600
+        mins = time_left[1] * 60
+        secs = time_left[2]    
         total_secs = hours + mins + secs
         time.sleep(total_secs)
             
-        def wait_until_ready(self) -> int:
-            """
-            Calls plate ready until the plate is made available
+    def wait_until_ready(self) -> int:
+        """
+        Calls plate ready until the plate is made available
 
-            Parameters
-            ----------
-            None
-            
-            """
-            plate_status = 1
-            while plate_status == 1:
-                plate_status = self.plate_ready()
-            
-                if plate_status == -1:
-                    self.get_error() # TODO
-                    return -1
-            if plate_status == 0:
-                print("Plate is ready to be retreived")
-                return 0
+        Parameters
+        ----------
+        None
+        
+        """
+        plate_status = 1
+        while plate_status == 1:
+            plate_status = self.plate_ready()
+        
+            if plate_status == -1:
+                self.check_error() # TODO
+                return -1
+        if plate_status == 0:
+            print("Plate is ready to be retreived")
+            return 0
 
             
     def check_temp_left(self):

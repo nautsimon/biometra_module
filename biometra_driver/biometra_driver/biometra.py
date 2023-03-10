@@ -6,32 +6,27 @@ dotnet_path = Path(__file__).resolve().parent / 'dotnet' / 'BiometraLibraryNet'
 clr.AddReference(str(dotnet_path))
 import BiometraLibrary 
 
-from biometra_driver.errors import ErrorResponse
-from biometra_driver.functions import Functions
+# from errors import ErrorResponse
+from functions import Functions
 
+#TODO: experiement with async error checking
 
 class Biometra:
-    functions: Functions
-    
-    
-    def __init__(self, serial_port: str):
+
+    def __init__(self):
         self.functions = Functions()
         self.protocol_status = 1
-        
-        
-    def ready(self) -> bool:
-        """True if the device is not busy"""
-        return self.__memory_map.bits[1915]
     
-    def has_error(self) -> bool:
-        """True if the device has an error"""
-        return self.__memory_map.bits[1814]
+    def check_error_logs(self):
+        err, all_error_log_files = self.functions.error_log_cmds.GetAllErrorLogFiles(self.functions.device_desc)
+        data_list = all_error_log_files.DataList
+        return data_list
 
-    def get_error(self) -> Optional[ErrorResponse]:
+    def get_error(self, new_data_list):
         """If the device has an error, return it. Else, return None."""
-        if self.has_error:
-            return ErrorResponse.from_error_code(self.__memory_map.data[200])
-        return None
+        if self.data_list == new_data_list:
+            pass
+        #TODO
     
     def main(self, prog) -> None:
         """
@@ -42,8 +37,15 @@ class Biometra:
         -----------
         prog: ID number of desired program to run
         """
+        # pull error log files
+        self.data_list = self.has_error()
+        #close lid (put into run pcr program)
         self.functions.run_pcr_program(prog)
+        time.sleep(10)
         self.functions.countdown()
-        plate_status = self.wait_until_ready()
+        plate_status = self.functions.wait_until_ready()
+        #examine error log files again, see if any new ones
+        new_data_list = self.has_error()
+        self.get_error(new_data_list)
         self.protocol_status = plate_status
         
