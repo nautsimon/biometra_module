@@ -98,12 +98,12 @@ class biometraNode(Node):
             self.get_logger().warn("Waiting for Biometra to switch to READY state...")
             sleep(0.2)
         
-        action_handle = request.action_handle
+        # action_handle = request.action_handle
         vars = eval(request.vars)
         self.get_logger().info(str(vars))
         self.action_flag = "BUSY"
 
-        if request.action_handle=='status':
+        if request.action_handle =='status':
             self.get_logger().info('Starting Action ' + request.action_handle.upper())
             try:
                 self.functions.get_status()
@@ -232,7 +232,7 @@ class biometraNode(Node):
                 self.get_logger().info(msg.data)
                 self.action_flag = "READY"
 
-            elif self.biometra.status_msg == 1 or self.biometra.status_msg == 2 or self.biometra.status_msg == 4 or self.action_flag == "BUSY": # TODO
+            elif self.biometra.status_msg == 1 or self.action_flag == "BUSY": # TODO
                 self.state = "BUSY"
                 msg.data = 'State: %s' % self.state
                 self.statePub.publish(msg)

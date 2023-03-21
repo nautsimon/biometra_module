@@ -44,8 +44,11 @@ class Functions:
         if err:
             self.error = err
             print(err)
-            return -1
-        return 0
+            self.status_msg = -1
+            # return -1
+        else:
+            self.status_msg = 0
+        # return 0
     #TODO: more sophisticated, maybe gets called from "get error" in main
 
     
@@ -57,11 +60,6 @@ class Functions:
         # Create new program
         self.pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram()
     
-    def create_program(self, params):
-        pass
-
-    def get_state(self):
-        pass
 
     def list_programs(self):
         err, program_list = self.program_cmds.GetProgramOverview(self.device_desc, self.user)
@@ -87,6 +85,7 @@ class Functions:
         if status.CanOpenLid == True:
             print("Opening Lid")
             self.block_cmds.OpenMotLid(self.device_desc,self.block_n)
+            # TODO: use while loop to wait for lid to open instead of sleep
             time.sleep(20)
         # else: self.error == "Lid already open"
 
@@ -240,7 +239,7 @@ class Functions:
             plate_status = self.plate_ready()
         
             if plate_status == -1:
-                self.check_error() # TODO
+                # self.check_error() # TODO: call some way to get status readout
                 return -1
         if plate_status == 0:
             print("Plate is ready to be retreived")

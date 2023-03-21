@@ -11,5 +11,10 @@ def generate_launch_description():
             executable = 'biometra_client',
             output = "screen",
             name='biometraNode'
-        ),
-    ])
+        )
+    
+    launch_d = LaunchDescription()
+
+    launch_d.add_action(biometra_client)
+
+    return launch_d
