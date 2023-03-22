@@ -86,8 +86,16 @@ class Functions:
             print("Opening Lid")
             self.block_cmds.OpenMotLid(self.device_desc,self.block_n)
             # TODO: use while loop to wait for lid to open instead of sleep
-            time.sleep(20)
+            time.sleep(5)
+            while status.CanCloseLid == False:
+                print("Opening Lid")
+                err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
+                time.sleep(1)
+
+            # time.sleep(20)
         # else: self.error == "Lid already open"
+        else:
+            print("Lid already open")
 
     def close_lid(self):
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
@@ -95,9 +103,16 @@ class Functions:
         if status.CanCloseLid == True:
             print("Closing Lid")
             self.block_cmds.CloseMotLid(self.device_desc,self.block_n)
-            time.sleep(20)
+            time.sleep(5)
+            while status.CanOpenLid == False:
+                print("Closing Lid")
+                err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
+                time.sleep(1)
+            # time.sleep(20)
         # else:
         #     self.error == "Lid already closed"
+        else:
+            print("Lid already closed")
     def plate_ready(self):
         '''
         determines whether or not a plate is ready to be removed from the biometra
