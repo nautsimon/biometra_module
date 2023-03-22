@@ -24,7 +24,7 @@ setup(
     license="MIT License",
     entry_points={ 
         'console_scripts': [
-            'biometra_driver = biometra_driver.biometra_driver.biometra:run_program',
+            'biometra_driver = biometra_driver.biometra_driver.biometra:main_null',
         ]
     },
 )

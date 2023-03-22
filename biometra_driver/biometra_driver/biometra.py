@@ -53,4 +53,6 @@ class Biometra:
         if self.status_msg == -1:
             pass
             # TODO: run get_error here, accesses error.py for list of possible error codes
-        
+            
+if __name__ == "__main__":
+    pass
