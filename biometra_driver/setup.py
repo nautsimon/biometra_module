@@ -12,7 +12,6 @@ setup(
             ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
             ('share/' + package_name, ['package.xml']),
-            (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
         ],
     install_requires=["pythonnet"],
     zip_safe=True,
@@ -24,7 +23,7 @@ setup(
     license="MIT License",
     entry_points={ 
         'console_scripts': [
-            'biometra_driver = biometra_driver.biometra_driver.biometra:main_null',
+            'biometra_driver = biometra_driver.biometra_driver.biometra:main',
         ]
     },
 )
