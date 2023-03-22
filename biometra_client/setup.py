@@ -24,7 +24,7 @@ setup(
     license='MIT License',
     entry_points={ 
         'console_scripts': [
-            'biometraNode = biometra_client.biometraNode:main',
+            'biometra_client = biometra_client.biometra_client:main',
         ]
     },
 )

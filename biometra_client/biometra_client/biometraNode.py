@@ -12,8 +12,8 @@ from wei_services.srv import WeiActions, WeiDescription
 
 from time import sleep
 
-from biometra_driver.biometra_driver import Biometra
-from biometra_driver.biometra_driver import Functions
+from biometra_driver.biometra import Biometra
+from biometra_driver.functions import Functions
 
 class biometraNode(Node):
     '''
@@ -253,24 +253,31 @@ class biometraNode(Node):
 
 
 def main(args = None):
+    # NAME = "biometraNode"
+    # rclpy.init(args=args)  # initialize Ros2 communication
+    # try:
+    #     node = biometraNode(NODE_NAME=NAME)
+    #     executor = MultiThreadedExecutor()
+    #     executor.add_node(node)
+
+    #     try:
+    #         node.get_logger().info('Beginning client, shut down with CTRL-C')
+    #         executor.spin()
+    #     except KeyboardInterrupt:
+    #         node.get_logger().info('Keyboard interupt, shutting down.\n')
+    #     finally:
+    #         executor.shutdown()
+    #         node.destroy_node()
+    
+    # finally:
+    #     rclpy.shutdown()
+
     NAME = "biometraNode"
     rclpy.init(args=args)  # initialize Ros2 communication
-    try:
-        node = biometraNode(NODE_NAME=NAME)
-        executor = MultiThreadedExecutor()
-        executor.add_node(node)
+    node = biometraNode(NODE_NAME=NAME)
+    rclpy.spin(node)     # keep Ros2 communication open for action node
+    rclpy.shutdown()     # kill Ros2 communication
 
-        try:
-            node.get_logger().info('Beginning client, shut down with CTRL-C')
-            executor.spin()
-        except KeyboardInterrupt:
-            node.get_logger().info('Keyboard interupt, shutting down.\n')
-        finally:
-            executor.shutdown()
-            node.destroy_node()
-    
-    finally:
-        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
