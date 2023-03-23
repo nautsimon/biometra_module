@@ -45,10 +45,8 @@ class Functions:
             self.error = err
             print(err)
             self.status_msg = -1
-            # return -1
         else:
             self.status_msg = 0
-        # return 0
     #TODO: more sophisticated, maybe gets called from "get error" in main
 
     
@@ -85,15 +83,12 @@ class Functions:
         if status.CanOpenLid == True:
             print("Opening Lid")
             self.block_cmds.OpenMotLid(self.device_desc,self.block_n)
-            # TODO: use while loop to wait for lid to open instead of sleep
             time.sleep(5)
             while status.CanCloseLid == False:
                 print("Opening Lid")
                 err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
                 time.sleep(1)
 
-            # time.sleep(20)
-        # else: self.error == "Lid already open"
         else:
             print("Lid already open")
 
@@ -108,9 +103,6 @@ class Functions:
                 print("Closing Lid")
                 err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
                 time.sleep(1)
-            # time.sleep(20)
-        # else:
-        #     self.error == "Lid already closed"
         else:
             print("Lid already closed")
     def plate_ready(self):

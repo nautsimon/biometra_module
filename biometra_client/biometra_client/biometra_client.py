@@ -216,11 +216,11 @@ class biometraNode(Node):
         
         if self.state != "BIOMETRA CONNECTION ERROR":
 
-            if self.state == "ERROR" or self.biometra.status_msg == -1: #TODO: have biometra output this as variable
+            if self.state == "ERROR" or self.biometra.status_msg == -1:
                 msg.data = 'State: ERROR'
                 self.statePub.publish(msg)
                 self.get_logger().error(msg.data)
-                self.get_logger().error(self.biometra.error_msg.upper()) # TODO:
+                self.get_logger().error(self.biometra.error_msg.upper())
                 self.get_logger().warn('Trying to reset the Biometra')
                 self.reset_request_count += 1
                 self.action_flag = "READY"
@@ -232,7 +232,7 @@ class biometraNode(Node):
                 self.get_logger().info(msg.data)
                 self.action_flag = "READY"
 
-            elif self.biometra.status_msg == 1 or self.action_flag == "BUSY": # TODO
+            elif self.biometra.status_msg == 1 or self.action_flag == "BUSY":
                 self.state = "BUSY"
                 msg.data = 'State: %s' % self.state
                 self.statePub.publish(msg)
@@ -253,24 +253,6 @@ class biometraNode(Node):
 
 
 def main(args = None):
-    # NAME = "biometraNode"
-    # rclpy.init(args=args)  # initialize Ros2 communication
-    # try:
-    #     node = biometraNode(NODE_NAME=NAME)
-    #     executor = MultiThreadedExecutor()
-    #     executor.add_node(node)
-
-    #     try:
-    #         node.get_logger().info('Beginning client, shut down with CTRL-C')
-    #         executor.spin()
-    #     except KeyboardInterrupt:
-    #         node.get_logger().info('Keyboard interupt, shutting down.\n')
-    #     finally:
-    #         executor.shutdown()
-    #         node.destroy_node()
-    
-    # finally:
-    #     rclpy.shutdown()
 
     NAME = "biometra_client"
     rclpy.init(args=args)  # initialize Ros2 communication
