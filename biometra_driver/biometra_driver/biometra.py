@@ -7,7 +7,7 @@ clr.AddReference(str(dotnet_path))
 import BiometraLibrary 
 
 # from errors import ErrorResponse
-from functions import Functions
+from biometra_driver.functions import Functions
 
 #TODO: experiement with async error checking
 

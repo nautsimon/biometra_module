@@ -13,7 +13,8 @@ from wei_services.srv import WeiActions, WeiDescription
 from time import sleep
 
 from biometra_driver.biometra import Biometra
-from biometra_driver.functions import Functions
+from biometra_driver.biometra import Functions
+
 
 class biometraNode(Node):
     '''
