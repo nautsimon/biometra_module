@@ -13,7 +13,6 @@ from wei_services.srv import WeiActions, WeiDescription
 from time import sleep
 
 from biometra_driver.biometra import Biometra
-from biometra_driver.biometra import Functions
 
 
 class biometraNode(Node):
@@ -29,8 +28,8 @@ class biometraNode(Node):
 
         super().__init__(NODE_NAME)
         
+        self.node_name = NODE_NAME
         self.biometra = Biometra()
-        self.functions = Functions()
         self.state = "READY"
         self.robot_status = ""
         self.action_flag = "READY"
@@ -39,7 +38,7 @@ class biometraNode(Node):
 
         
         self.description = {
-            'name': NODE_NAME,
+            'name': self.node_name,
             'type': 'biometra_thermocycler',
             'actions':
             {
@@ -58,7 +57,7 @@ class biometraNode(Node):
         timer_period = 0.5  # seconds
         state_refresher_timer_period = 0.5 # seconds
 
-        self.StateRefresherTimer = self.create_timer(state_refresher_timer_period, callback = self.robot_state_refresher_callback, callback_group = state_refresher_cb_group)
+        self.StateRefresherTimer = self.create_timer(state_refresher_timer_period, callback = self.stateCallback, callback_group = state_refresher_cb_group)
 
         self.statePub = self.create_publisher(String, self.node_name + "/state", 10)       # Publisher for sealer state
         self.stateTimer = self.create_timer(timer_period, self.stateCallback, callback_group=state_cb_group)   # Callback that publishes to sealer state
@@ -107,7 +106,7 @@ class biometraNode(Node):
         if request.action_handle =='status':
             self.get_logger().info('Starting Action ' + request.action_handle.upper())
             try:
-                self.functions.get_status()
+                self.biometra.functions.get_status()
 
             except Exception as err:
                 self.state = "ERROR"
@@ -130,7 +129,7 @@ class biometraNode(Node):
             self.get_logger().info('Starting Action ' + request.action_handle.upper())         
             
             try:
-                self.functions.open_lid()
+                self.biometra.functions.open_lid()
 
             except Exception as err:
                 self.state = "ERROR"
@@ -152,7 +151,7 @@ class biometraNode(Node):
             self.get_logger().info('Starting Action ' + request.action_handle.upper())
 
             try:
-                self.functions.close_lid()
+                self.biometra.functions.close_lid()
 
             except Exception as err:
                 self.state = "ERROR"
@@ -209,7 +208,7 @@ class biometraNode(Node):
         msg = String()
 
         try:
-            biometra_msg = self.functions.get_status() # TODO: translate status messages
+            biometra_msg = self.biometra.functions.get_status() # TODO: translate status messages
         
         except Exception as err:
             self.get_logger().error("BIOMETRA IS NOT RESPONDING! ERROR: " + str(err))

@@ -49,7 +49,11 @@ class Functions:
             self.status_msg = 0
     #TODO: more sophisticated, maybe gets called from "get error" in main
 
-    
+    def get_status(self):
+        err, status = self.tcda_cmds.GetBlockState(self.device_desc, self.block_n)
+        print('STATUS', status)        
+        return self.check_error(err)
+
     def create_program(self):
         # self.file = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker(self.fileInfo)
         self.programFileWorker = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker()
