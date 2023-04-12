@@ -30,7 +30,7 @@ class biometraNode(Node):
         
         self.node_name = NODE_NAME
         self.biometra = Biometra()
-        self.state = "READY"
+        self.state = ""
         self.robot_status = ""
         self.action_flag = "READY"
         self.reset_request_count = 0
@@ -91,7 +91,13 @@ class biometraNode(Node):
         The actionCallback function is a service that can be called to execute the available actions the robot
         can preform.
         '''
-        #TODO: maybe check connection here
+        # print device desc? or maybe theres a check connection function
+        if self.biometra.functions.device_desc:
+            # biometra is connected, set ready state
+            self.state = "READY"
+        else: # no biometra connected, set error state
+            self.state = "ERROR"
+
 
 
         while self.state != "READY":
@@ -208,7 +214,7 @@ class biometraNode(Node):
         msg = String()
 
         try:
-            biometra_msg = self.biometra.functions.get_status() # TODO: translate status messages
+            self.state = self.biometra.functions.get_status()
         
         except Exception as err:
             self.get_logger().error("BIOMETRA IS NOT RESPONDING! ERROR: " + str(err))
@@ -220,11 +226,11 @@ class biometraNode(Node):
                 msg.data = 'State: ERROR'
                 self.statePub.publish(msg)
                 self.get_logger().error(msg.data)
-                self.get_logger().error(self.biometra.error_msg.upper())
+                self.get_logger().error(self.biometra.error_msg.upper()) # TODO: change to error function to be written
                 self.get_logger().warn('Trying to reset the Biometra')
                 self.reset_request_count += 1
                 self.action_flag = "READY"
-                self.state = "UNKOWN"
+                self.state = "UNKNOWN"
             
             elif self.state == "COMPLETED" and self.action_flag == "BUSY":
                 msg.data = 'State: %s' % self.state
