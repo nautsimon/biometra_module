@@ -274,5 +274,20 @@ def main(args = None):
     rclpy.shutdown()     # kill Ros2 communication
 
 
+    try:
+        biometra_client = biometraNode()
+        executor = MultiThreadedExecutor()
+        executor.add_node(peeler_client)
+
+        try:
+            peeler_client.get_logger().info('Beginning client, shut down with CTRL-C')
+            executor.spin()
+        except KeyboardInterrupt:
+            peeler_client.get_logger().info('Keyboard interrupt, shutting down.\n')
+        finally:
+            executor.shutdown()
+            peeler_client.destroy_node()
+    finally:
+        rclpy.shutdown()
 if __name__ == '__main__':
     main()
