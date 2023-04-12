@@ -29,6 +29,14 @@ class biometraNode(Node):
         super().__init__(TEMP_NODE_NAME)
         self.node_name = self.get_name()
 
+        self.declare_parameter("device_name","device1")
+
+        # Receiving the real IP and PORT from the launch parameters
+        self.device_name =  self.get_parameter("device_name").get_parameter_value().string_value
+
+        self.get_logger().info("Received Device Name: " + self.device_name + " Robot name: " + str(self.node_name))
+        
+        self.state = "UNKNOWN"
         self.biometra = Biometra()
         self.state = ""
         self.robot_status = ""
