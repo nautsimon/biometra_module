@@ -20,15 +20,15 @@ class biometraNode(Node):
     The biometraNode inputs data from the 'action' topic, providing a set of commands for the driver to execute. It then receives feedback, 
     based on the executed command and publishes the state of the biometra and a description of the biometra to the respective topics.
     '''
-    def __init__(self, NODE_NAME = "biometra_client"):
+    def __init__(self, TEMP_NODE_NAME = "biometraNode"):
         '''
         The init function is neccesary for the biometraNode class to initialize all variables, parameters, and other functions.
         Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
         '''
 
-        super().__init__(NODE_NAME)
-        
-        self.node_name = NODE_NAME
+        super().__init__(TEMP_NODE_NAME)
+        self.node_name = self.get_name()
+
         self.biometra = Biometra()
         self.state = ""
         self.robot_status = ""
@@ -260,9 +260,8 @@ class biometraNode(Node):
 
 def main(args = None):
 
-    NAME = "biometra_client"
     rclpy.init(args=args)  # initialize Ros2 communication
-    node = biometraNode(NODE_NAME=NAME)
+    node = biometraNode()
     rclpy.spin(node)     # keep Ros2 communication open for action node
     rclpy.shutdown()     # kill Ros2 communication
 

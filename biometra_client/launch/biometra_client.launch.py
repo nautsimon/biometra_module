@@ -10,7 +10,7 @@ def generate_launch_description():
             namespace = 'std_ns',
             executable = 'biometra_client',
             output = "screen",
-            name='biometra_client'
+            name='biometraNode'
         )
     
     launch_d = LaunchDescription()
