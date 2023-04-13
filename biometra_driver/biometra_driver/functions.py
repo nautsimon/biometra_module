@@ -66,6 +66,8 @@ class Functions:
         elif status_str == "BLKSTATE_PAUSE":
             print("PROGRAM IS PAUSED")
             return "BUSY"
+        else:
+            return "UNKNOWN"
 
     def create_program(self):
         # self.file = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker(self.fileInfo)

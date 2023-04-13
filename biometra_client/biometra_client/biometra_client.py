@@ -155,13 +155,13 @@ class biometraNode(Node):
             except Exception as err:
                 self.state = "ERROR"
                 response.action_response = -1
-                response.action_msg = str("Biometra") + " get_status failed. Error: " + str(err) # TODO: swap name for self.node_name
+                response.action_msg = str("Biometra") + " open_lid failed. Error: " + str(err) # TODO: swap name for self.node_name
                 self.get_logger().error(response.action_msg)
 
             else:
                 self.state = "COMPLETED"
                 response.action_response = 0
-                response.action_msg = str("Biometra") + " get_status successful"
+                response.action_msg = str("Biometra") + " open_lid successful"
                 self.get_logger().info(response.action_msg)
 
             finally:
@@ -177,13 +177,13 @@ class biometraNode(Node):
             except Exception as err:
                 self.state = "ERROR"
                 response.action_response = -1
-                response.action_msg = str("Biometra") + " get_status failed. Error: " + str(err) # TODO: swap name for self.node_name
+                response.action_msg = str("Biometra") + " close_lid failed. Error: " + str(err) # TODO: swap name for self.node_name
                 self.get_logger().error(response.action_msg)
 
             else:
                 self.state = "COMPLETED"
                 response.action_response = 0
-                response.action_msg = str("Biometra") + " get_status successful"
+                response.action_msg = str("Biometra") + " close_lid successful"
                 self.get_logger().info(response.action_msg)
 
             finally:
@@ -199,13 +199,13 @@ class biometraNode(Node):
             except Exception as err:
                 self.state = "ERROR"
                 response.action_response = -1
-                response.action_msg = str("Biometra") + " get_status failed. Error: " + str(err) # TODO: swap name for self.node_name
+                response.action_msg = str("Biometra") + " run_program failed. Error: " + str(err) # TODO: swap name for self.node_name
                 self.get_logger().error(response.action_msg)
 
             else:
                 self.state = "COMPLETED"
                 response.action_response = 0
-                response.action_msg = str("Biometra") + " get_status successful"
+                response.action_msg = str("Biometra") + " run_program successful"
                 self.get_logger().info(response.action_msg)
 
             finally:
