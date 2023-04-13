@@ -36,8 +36,7 @@ class biometraNode(Node):
 
         self.get_logger().info("Received Device Name: " + self.device_name + " Robot name: " + str(self.node_name))
         
-        self.state = "UNKNOWN"
-        self.biometra = Biometra()
+        self.ConnectBiometra()
         self.state = ""
         self.robot_status = ""
         self.action_flag = "READY"
@@ -73,6 +72,15 @@ class biometraNode(Node):
         self.actionSrv = self.create_service(WeiActions, self.node_name + "/action_handler", self.actionCallback, callback_group=action_cb_group)
         self.descriptionSrv = self.create_service(WeiDescription, self.node_name + "/description_handler", self.descriptionCallback, callback_group=description_cb_group)
 
+    def ConnectBiometra(self):
+        try:
+            self.device_desc = self.biometra.functions.find_device()
+        except Exception as err:
+            self.state = "BIOMETRA CONNECTION ERROR"
+            self.get_logger().error("Biometra error message: ", + str(err))
+        else:
+            self.get_logger().info("Biometra online")
+            self.biometra = Biometra()
 
     def descriptionCallback(self, request, response):
         """The descriptionCallback function is a service that can be called to showcase the available actions a robot
@@ -100,13 +108,12 @@ class biometraNode(Node):
         can preform.
         '''
         # print device desc? or maybe theres a check connection function
-        if self.biometra.functions.device_desc:
-            # biometra is connected, set ready state
-            self.state = "READY"
-        else: # no biometra connected, set error state
-            self.state = "ERROR"
-
-
+        if self.state == "BIOMETRA CONNECTION ERROR":
+            message = "Connection error, cannot accept job"
+            self.get_logger().error(message)
+            response.action_response = -1
+            response.action_msg = message
+            return response
 
         while self.state != "READY":
             self.get_logger().warn("Waiting for Biometra to switch to READY state...")
@@ -262,7 +269,8 @@ class biometraNode(Node):
             msg.data = 'State: %s' % self.state
             self.statePub.publish(msg)
             self.get_logger().error(msg.data)
-            self.get_logger().warn("Cannot connect to Biomeetra! Check connection")
+            self.get_logger().warn("Cannot connect to Biomeetra! Trying to connect again...")
+            self.ConnectBiometra()
 
 
 
@@ -277,16 +285,16 @@ def main(args = None):
     try:
         biometra_client = biometraNode()
         executor = MultiThreadedExecutor()
-        executor.add_node(peeler_client)
+        executor.add_node(biometra_client)
 
         try:
-            peeler_client.get_logger().info('Beginning client, shut down with CTRL-C')
+            biometra_client.get_logger().info('Beginning client, shut down with CTRL-C')
             executor.spin()
         except KeyboardInterrupt:
-            peeler_client.get_logger().info('Keyboard interrupt, shutting down.\n')
+            biometra_client.get_logger().info('Keyboard interrupt, shutting down.\n')
         finally:
             executor.shutdown()
-            peeler_client.destroy_node()
+            biometra_client.destroy_node()
     finally:
         rclpy.shutdown()
 if __name__ == '__main__':

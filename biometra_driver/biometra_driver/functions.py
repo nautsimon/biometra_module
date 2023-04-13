@@ -27,6 +27,7 @@ class Functions:
         self.lid_state = self.get_lid_state()
         self.run_status = self.get_run_status()
         self.run_time_left = self.get_time_left()
+        self.status_msg = 0 
         
         
     def find_device(self):
