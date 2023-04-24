@@ -50,7 +50,8 @@ class Biometra:
         # self.get_error(new_data_list)
         self.protocol_status = plate_status
         self.status_msg = self.functions.status_msg
-        if self.status_msg == -1:
+        self.functions.run_status = self.functions.get_run_status()
+        if self.status_msg == -1 or self.protocol_status == -1:
             pass
             # TODO: run get_error here, accesses error.py for list of possible error codes
             

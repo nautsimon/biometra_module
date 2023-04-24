@@ -1,3 +1,4 @@
+from os import stat
 import clr
 from pathlib import Path
 import time as time 
@@ -26,6 +27,7 @@ class Functions:
         self.lid_state = self.get_lid_state()
         self.run_status = self.get_run_status()
         self.run_time_left = self.get_time_left()
+        self.status_msg = 0 
         
         
     def find_device(self):
@@ -51,8 +53,21 @@ class Functions:
 
     def get_status(self):
         err, status = self.tcda_cmds.GetBlockState(self.device_desc, self.block_n)
-        print('STATUS', status)        
-        return self.check_error(err)
+        status_str = str(status.BlockStateView)
+        if status_str == "BLKSTATE_FREE":
+            if self.get_lid_state == 0:
+                return "READY"
+        elif status_str == "BLKSTATE_RUN":
+            return "BUSY"
+        elif status_str == "BLKSTATE_ERROR":
+            return "ERROR"
+        elif status_str == "BLKSTATE_PREHEATING":
+            return "BUSY"
+        elif status_str == "BLKSTATE_PAUSE":
+            print("PROGRAM IS PAUSED")
+            return "BUSY"
+        else:
+            return "UNKNOWN"
 
     def create_program(self):
         # self.file = BiometraLibrary.FileClasses.FileWorkClasses.DeviceFileWorkClasses.ProgramFileWorker(self.fileInfo)
@@ -75,6 +90,8 @@ class Functions:
         prog_type = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.EnProgramType.TYPE_PROGRAM
         program_n = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses.ProgramNumber(prog, prog_type)
         err = self.block_cmds.StartProgramOnBlock(self.device_desc, self.user, program_n, self.block_n, True)
+        time.sleep(5)
+        self.run_status = self.get_run_status()
         self.check_error(err)
 
     def stop_program(self):
@@ -92,9 +109,9 @@ class Functions:
                 print("Opening Lid")
                 err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
                 time.sleep(1)
-
         else:
             print("Lid already open")
+        self.lid_state = self.get_lid_state()
 
     def close_lid(self):
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
@@ -109,6 +126,8 @@ class Functions:
                 time.sleep(1)
         else:
             print("Lid already closed")
+        self.lid_state = self.get_lid_state()
+
     def plate_ready(self):
         '''
         determines whether or not a plate is ready to be removed from the biometra
@@ -131,7 +150,6 @@ class Functions:
             if lid_status == 1:
                 # lid is closed
                 self.open_lid()
-                print("lid is closed, opening lid")
                 return 1 # takes approx. 20 seconds to open lid
             elif lid_status == -1:
                 print("lid is in motion")
@@ -196,12 +214,15 @@ class Functions:
         self.check_error(err)
         if str(status) == "0000 0000 0000 0011":
             print("The lid is open on thermocycler " + f"{self.device_desc}")
+            self.lid_state = 0
             return 0
         elif str(status) == "0000 0000 0000 0101":
             print("The lid is closed on thermocycler " + f"{self.device_desc}")
+            self.lid_state = 1
             return 1
         else:
             print("The lid is currently moving on thermocycler " + f"{self.device_desc}")
+            self.lid_state = -1
             return -1
 
     def get_time_left(self):
@@ -250,7 +271,8 @@ class Functions:
             plate_status = self.plate_ready()
         
             if plate_status == -1:
-                # self.check_error() # TODO: call some way to get status readout
+                status = self.get_status()
+                print(status)
                 return -1
         if plate_status == 0:
             print("Plate is ready to be retreived")
