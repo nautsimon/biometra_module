@@ -36,11 +36,13 @@ class biometraNode(Node):
 
         self.get_logger().info("Received Device Name: " + self.device_name + " Robot name: " + str(self.node_name))
         
-        self.ConnectBiometra()
         self.state = ""
         self.robot_status = ""
         self.action_flag = "READY"
         self.reset_request_count = 0
+        self.state_refresher_timer = 0
+        self.ConnectBiometra()
+        self.robot_state_refresher_callback()
 
 
         
@@ -60,17 +62,36 @@ class biometraNode(Node):
         description_cb_group = ReentrantCallbackGroup()
         state_cb_group = ReentrantCallbackGroup()       
         state_refresher_cb_group = ReentrantCallbackGroup()
+        
 
         timer_period = 0.5  # seconds
-        state_refresher_timer_period = 0.5 # seconds
+        state_refresher_period = 0.5 # seconds
 
-        self.StateRefresherTimer = self.create_timer(state_refresher_timer_period, callback = self.stateCallback, callback_group = state_refresher_cb_group)
+        self.StateRefresherTimer = self.create_timer(state_refresher_period, callback = self.robot_state_refresher_callback, callback_group = state_refresher_cb_group)
 
         self.statePub = self.create_publisher(String, self.node_name + "/state", 10)       # Publisher for sealer state
         self.stateTimer = self.create_timer(timer_period, self.stateCallback, callback_group=state_cb_group)   # Callback that publishes to sealer state
 
         self.actionSrv = self.create_service(WeiActions, self.node_name + "/action_handler", self.actionCallback, callback_group=action_cb_group)
         self.descriptionSrv = self.create_service(WeiDescription, self.node_name + "/description_handler", self.descriptionCallback, callback_group=description_cb_group)
+
+    def robot_state_refresher_callback(self):
+        """ Refreshes the robot states if robot cannot update the state parameters automatically because it is not running any jobs"""
+        try:
+
+            if self.action_flag == "READY":
+                self.biometra.functions.get_status()
+                self.state_refresher_timer = 0
+
+            elif self.state_refresher_timer > 60: # TODO: maybe also check state here, to see if robot is frozen
+                self.biometra.functions.get_status()
+                self.state_refresher_timer = 0
+            
+            #TODO: check current state to past state to see if robot is frozen
+        
+        except Exception as err:
+            self.state = "ERROR"
+            self.get_logger().error(str(err))
 
     def ConnectBiometra(self):
         try:
@@ -132,7 +153,7 @@ class biometraNode(Node):
             except Exception as err:
                 self.state = "ERROR"
                 response.action_response = -1
-                response.action_msg = str("Biometra") + " get_status failed. Error: " + str(err) # TODO: swap name for self.node_name
+                response.action_msg = str("Biometra") + " get_status failed. Error: " + str(err)
                 self.get_logger().error(response.action_msg)
             
             else:
@@ -155,7 +176,7 @@ class biometraNode(Node):
             except Exception as err:
                 self.state = "ERROR"
                 response.action_response = -1
-                response.action_msg = str("Biometra") + " open_lid failed. Error: " + str(err) # TODO: swap name for self.node_name
+                response.action_msg = str("Biometra") + " open_lid failed. Error: " + str(err)
                 self.get_logger().error(response.action_msg)
 
             else:
@@ -177,7 +198,7 @@ class biometraNode(Node):
             except Exception as err:
                 self.state = "ERROR"
                 response.action_response = -1
-                response.action_msg = str("Biometra") + " close_lid failed. Error: " + str(err) # TODO: swap name for self.node_name
+                response.action_msg = str("Biometra") + " close_lid failed. Error: " + str(err)
                 self.get_logger().error(response.action_msg)
 
             else:
@@ -199,7 +220,7 @@ class biometraNode(Node):
             except Exception as err:
                 self.state = "ERROR"
                 response.action_response = -1
-                response.action_msg = str("Biometra") + " run_program failed. Error: " + str(err) # TODO: swap name for self.node_name
+                response.action_msg = str("Biometra") + " run_program failed. Error: " + str(err)
                 self.get_logger().error(response.action_msg)
 
             else:
