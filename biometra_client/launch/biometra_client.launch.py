@@ -7,26 +7,36 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
 
-    port = LaunchConfiguration('port')
-
-    declare_use_port_cmd = DeclareLaunchArgument(
-        name='port',
-        default_value="10100",
-        description='Flag to accept port number')
-
+    launch_d = LaunchDescription()
+    
+    robot_name = LaunchConfiguration('robot_name')
+    device_name =  LaunchConfiguration('device_name')
+    
+    declare_use_robot_name_cmd = DeclareLaunchArgument(
+        name='robot_name',
+        default_value="biometra96"
+        description='Flag to accept robot_name')
+    
+    declare_use_robot_name_cmd = DeclareLaunchArgument(
+        name='device_name',
+        default_value="device1"
+        description='Flag to accept robot_name')
+    
     biometra_client = Node(
             package = 'biometra_client',
             namespace = 'std_ns',
             executable = 'biometra_client',
             output = "screen",
-            name='BiometraNode',
-            parameters = [{"port":port}],
-            emulate_tty=True
-
-        )
-
+            name = robot_name,
+            parameters = [
+                {"device_name":device_name}
+                ],
+            emulate_tty = True,        
+            )
+    
     launch_d = LaunchDescription()
-    launch_d.add_action(declare_use_port_cmd)
+    launch_d.add_action(declare_use_robot_name_cmd)
+    launch_d.add_action(declare_use_robot_name_cmd)
     launch_d.add_action(biometra_client)
 
     return launch_d
