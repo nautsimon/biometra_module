@@ -14,12 +14,12 @@ def generate_launch_description():
     
     declare_use_robot_name_cmd = DeclareLaunchArgument(
         name='robot_name',
-        default_value="biometra96"
+        default_value="biometra96",
         description='Flag to accept robot_name')
     
     declare_use_robot_name_cmd = DeclareLaunchArgument(
         name='device_name',
-        default_value="device1"
+        default_value="device1",
         description='Flag to accept robot_name')
     
     biometra_client = Node(
