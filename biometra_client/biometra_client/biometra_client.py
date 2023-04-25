@@ -102,6 +102,56 @@ class biometraNode(Node):
         else:
             self.get_logger().info("Biometra online")
             self.biometra = Biometra()
+            
+    def stateCallback(self):
+        '''
+        Publishes the biometra state to the 'state' topic. 
+        '''
+        msg = String()
+
+        try:
+            self.state = self.biometra.functions.get_status()
+        
+        except Exception as err:
+            self.get_logger().error("BIOMETRA IS NOT RESPONDING! ERROR: " + str(err))
+            self.state = "BIOMETRA CONNECTION ERROR"
+        
+        if self.state != "BIOMETRA CONNECTION ERROR":
+
+            if self.state == "ERROR" or self.biometra.status_msg == -1:
+                msg.data = 'State: ERROR'
+                self.statePub.publish(msg)
+                self.get_logger().error(msg.data)
+                self.get_logger().error(self.biometra.error_msg.upper()) # TODO: change to error function to be written
+                self.get_logger().warn('Trying to reset the Biometra')
+                self.reset_request_count += 1
+                self.action_flag = "READY"
+                self.state = "UNKNOWN"
+            
+            elif self.state == "COMPLETED" and self.action_flag == "BUSY":
+                msg.data = 'State: %s' % self.state
+                self.statePub.publish(msg)
+                self.get_logger().info(msg.data)
+                self.action_flag = "READY"
+
+            elif self.biometra.status_msg == 1 or self.action_flag == "BUSY":
+                self.state = "BUSY"
+                msg.data = 'State: %s' % self.state
+                self.statePub.publish(msg)
+                self.get_logger().info(msg.data)
+
+            elif self.biometra.status_msg == 0 and self.action_flag == "READY":
+                self.state = "READY"
+                msg.data = 'State: %s' % self.state
+                self.statePub.publish(msg)
+                self.get_logger().info(msg.data)
+        
+        else:
+            msg.data = 'State: %s' % self.state
+            self.statePub.publish(msg)
+            self.get_logger().error(msg.data)
+            self.get_logger().warn("Cannot connect to Biomeetra! Trying to connect again...")
+            self.ConnectBiometra()
 
     def descriptionCallback(self, request, response):
         """The descriptionCallback function is a service that can be called to showcase the available actions a robot
@@ -241,67 +291,10 @@ class biometraNode(Node):
             self.state = "ERROR"
             return response
 
-        return response
-
-    def stateCallback(self):
-        '''
-        Publishes the biometra state to the 'state' topic. 
-        '''
-        msg = String()
-
-        try:
-            self.state = self.biometra.functions.get_status()
-        
-        except Exception as err:
-            self.get_logger().error("BIOMETRA IS NOT RESPONDING! ERROR: " + str(err))
-            self.state = "BIOMETRA CONNECTION ERROR"
-        
-        if self.state != "BIOMETRA CONNECTION ERROR":
-
-            if self.state == "ERROR" or self.biometra.status_msg == -1:
-                msg.data = 'State: ERROR'
-                self.statePub.publish(msg)
-                self.get_logger().error(msg.data)
-                self.get_logger().error(self.biometra.error_msg.upper()) # TODO: change to error function to be written
-                self.get_logger().warn('Trying to reset the Biometra')
-                self.reset_request_count += 1
-                self.action_flag = "READY"
-                self.state = "UNKNOWN"
-            
-            elif self.state == "COMPLETED" and self.action_flag == "BUSY":
-                msg.data = 'State: %s' % self.state
-                self.statePub.publish(msg)
-                self.get_logger().info(msg.data)
-                self.action_flag = "READY"
-
-            elif self.biometra.status_msg == 1 or self.action_flag == "BUSY":
-                self.state = "BUSY"
-                msg.data = 'State: %s' % self.state
-                self.statePub.publish(msg)
-                self.get_logger().info(msg.data)
-
-            elif self.biometra.status_msg == 0 and self.action_flag == "READY":
-                self.state = "READY"
-                msg.data = 'State: %s' % self.state
-                self.statePub.publish(msg)
-                self.get_logger().info(msg.data)
-        
-        else:
-            msg.data = 'State: %s' % self.state
-            self.statePub.publish(msg)
-            self.get_logger().error(msg.data)
-            self.get_logger().warn("Cannot connect to Biomeetra! Trying to connect again...")
-            self.ConnectBiometra()
-
-
-
+    
 def main(args = None):
 
     rclpy.init(args=args)  # initialize Ros2 communication
-    node = biometraNode()
-    rclpy.spin(node)     # keep Ros2 communication open for action node
-    rclpy.shutdown()     # kill Ros2 communication
-
 
     try:
         biometra_client = biometraNode()
