@@ -110,7 +110,8 @@ class biometraNode(Node):
         msg = String()
 
         try:
-            self.state = self.biometra.functions.get_status()
+            self.robot_status = self.biometra.functions.get_status()
+            # self.get_logger().warn(str(self.robot_status))
         
         except Exception as err:
             self.get_logger().error("BIOMETRA IS NOT RESPONDING! ERROR: " + str(err))
