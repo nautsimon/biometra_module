@@ -41,7 +41,7 @@ class biometraNode(Node):
         self.action_flag = "READY"
         self.reset_request_count = 0
         self.state_refresher_timer = 0    
-        self.biometra = Biometra()#device_id=device_id)
+        # self.biometra = Biometra() #device_id=device_id)
         self.ConnectBiometra()
         self.robot_state_refresher_callback()
 
@@ -95,13 +95,13 @@ class biometraNode(Node):
 
     def ConnectBiometra(self):
         try:
-            self.device_desc = self.biometra.functions.find_device()
+            self.biometra = Biometra()
+            # self.device_desc = self.biometra.functions.find_device()
         except Exception as err:
             self.state = "BIOMETRA CONNECTION ERROR"
             self.get_logger().error("Biometra error message: " + str(err))
         else:
             self.get_logger().info("Biometra online")
-            self.biometra = Biometra()
             
     def stateCallback(self):
         '''
