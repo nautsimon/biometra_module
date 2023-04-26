@@ -20,7 +20,7 @@ class biometraNode(Node):
     The biometraNode inputs data from the 'action' topic, providing a set of commands for the driver to execute. It then receives feedback, 
     based on the executed command and publishes the state of the biometra and a description of the biometra to the respective topics.
     '''
-    def __init__(self, TEMP_NODE_NAME = "biometraNode"):
+    def __init__(self, TEMP_NODE_NAME = "biometraNode", device_id=None):
         '''
         The init function is neccesary for the biometraNode class to initialize all variables, parameters, and other functions.
         Inside the function the parameters exist, and calls to other functions and services are made so they can be executed in main.
@@ -40,10 +40,10 @@ class biometraNode(Node):
         self.robot_status = ""
         self.action_flag = "READY"
         self.reset_request_count = 0
-        self.state_refresher_timer = 0
+        self.state_refresher_timer = 0    
+        # self.biometra = Biometra() #device_id=device_id)
         self.ConnectBiometra()
         self.robot_state_refresher_callback()
-
 
         
         self.description = {
@@ -95,13 +95,13 @@ class biometraNode(Node):
 
     def ConnectBiometra(self):
         try:
-            self.device_desc = self.biometra.functions.find_device()
+            self.biometra = Biometra()
+            # self.device_desc = self.biometra.functions.find_device()
         except Exception as err:
             self.state = "BIOMETRA CONNECTION ERROR"
-            self.get_logger().error("Biometra error message: ", + str(err))
+            self.get_logger().error("Biometra error message: " + str(err))
         else:
             self.get_logger().info("Biometra online")
-            self.biometra = Biometra()
             
     def stateCallback(self):
         '''
@@ -110,7 +110,8 @@ class biometraNode(Node):
         msg = String()
 
         try:
-            self.state = self.biometra.functions.get_status()
+            self.robot_status = self.biometra.functions.get_status()
+            # self.get_logger().warn(str(self.robot_status))
         
         except Exception as err:
             self.get_logger().error("BIOMETRA IS NOT RESPONDING! ERROR: " + str(err))
@@ -118,7 +119,7 @@ class biometraNode(Node):
         
         if self.state != "BIOMETRA CONNECTION ERROR":
 
-            if self.state == "ERROR" or self.biometra.status_msg == -1:
+            if self.state == "ERROR" or self.biometra.functions.status_msg == -1:
                 msg.data = 'State: ERROR'
                 self.statePub.publish(msg)
                 self.get_logger().error(msg.data)
@@ -134,13 +135,13 @@ class biometraNode(Node):
                 self.get_logger().info(msg.data)
                 self.action_flag = "READY"
 
-            elif self.biometra.status_msg == 1 or self.action_flag == "BUSY":
+            elif self.robot_status == "BUSY" or self.action_flag == "BUSY":
                 self.state = "BUSY"
                 msg.data = 'State: %s' % self.state
                 self.statePub.publish(msg)
                 self.get_logger().info(msg.data)
 
-            elif self.biometra.status_msg == 0 and self.action_flag == "READY":
+            elif self.robot_status == "READY" and self.action_flag == "READY":
                 self.state = "READY"
                 msg.data = 'State: %s' % self.state
                 self.statePub.publish(msg)
