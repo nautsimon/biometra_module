@@ -119,7 +119,7 @@ class biometraNode(Node):
         
         if self.state != "BIOMETRA CONNECTION ERROR":
 
-            if self.state == "ERROR" or self.biometra.status_msg == -1:
+            if self.state == "ERROR" or self.biometra.functions.status_msg == -1:
                 msg.data = 'State: ERROR'
                 self.statePub.publish(msg)
                 self.get_logger().error(msg.data)
@@ -135,13 +135,13 @@ class biometraNode(Node):
                 self.get_logger().info(msg.data)
                 self.action_flag = "READY"
 
-            elif self.biometra.status_msg == 1 or self.action_flag == "BUSY":
+            elif self.robot_status == "BUSY" or self.action_flag == "BUSY":
                 self.state = "BUSY"
                 msg.data = 'State: %s' % self.state
                 self.statePub.publish(msg)
                 self.get_logger().info(msg.data)
 
-            elif self.biometra.status_msg == 0 and self.action_flag == "READY":
+            elif self.robot_status == "READY" and self.action_flag == "READY":
                 self.state = "READY"
                 msg.data = 'State: %s' % self.state
                 self.statePub.publish(msg)
