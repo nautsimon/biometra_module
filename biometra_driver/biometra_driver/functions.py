@@ -100,6 +100,7 @@ class Functions:
         self.check_error(err)
     
     def open_lid(self):
+        self.close_lid()
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
         self.check_error(err)
         if status.CanOpenLid == True:
@@ -115,6 +116,7 @@ class Functions:
         self.lid_state = self.get_lid_state()
 
     def close_lid(self):
+        self.open_lid()
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
         self.check_error(err)
         if status.CanCloseLid == True:
@@ -147,6 +149,7 @@ class Functions:
             return -1
         elif run_status == 0:
             #no protocol in progress, check lid status
+            self.open_lid()
             lid_status = self.get_lid_state()
             if lid_status == 1:
                 # lid is closed
