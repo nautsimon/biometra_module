@@ -56,7 +56,7 @@ class Functions:
         err, status = self.tcda_cmds.GetBlockState(self.device_desc, self.block_n)
         status_str = str(status.BlockStateView)
         if status_str == "BLKSTATE_FREE":
-            if self.get_lid_state == 0:
+            if self.get_lid_state() == 0:
                 return "READY"
         elif status_str == "BLKSTATE_RUN":
             return "BUSY"
@@ -100,7 +100,7 @@ class Functions:
         self.check_error(err)
     
     def open_lid(self):
-        self.close_lid()
+        # self.close_lid()
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
         self.check_error(err)
         if status.CanOpenLid == True:
@@ -116,7 +116,7 @@ class Functions:
         self.lid_state = self.get_lid_state()
 
     def close_lid(self):
-        self.open_lid()
+        # self.open_lid()
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
         self.check_error(err)
         if status.CanCloseLid == True:
@@ -149,7 +149,9 @@ class Functions:
             return -1
         elif run_status == 0:
             #no protocol in progress, check lid status
+            self.close_lid()
             self.open_lid()
+            time.sleep(5)
             lid_status = self.get_lid_state()
             if lid_status == 1:
                 # lid is closed
@@ -217,15 +219,15 @@ class Functions:
         err, status = self.tcda_cmds.GetMotLidState(self.device_desc, self.block_n)
         self.check_error(err)
         if str(status) == "0000 0000 0000 0011":
-            print("The lid is open on thermocycler " + f"{self.device_desc}")
+            # print("The lid is open on thermocycler " + f"{self.device_desc}")
             self.lid_state = 0
             return 0
         elif str(status) == "0000 0000 0000 0101":
-            print("The lid is closed on thermocycler " + f"{self.device_desc}")
+            # print("The lid is closed on thermocycler " + f"{self.device_desc}")
             self.lid_state = 1
             return 1
         else:
-            print("The lid is currently moving on thermocycler " + f"{self.device_desc}")
+            # print("The lid is currently moving on thermocycler " + f"{self.device_desc}")
             self.lid_state = -1
             return -1
 
