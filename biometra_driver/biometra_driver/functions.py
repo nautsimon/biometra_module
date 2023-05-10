@@ -56,8 +56,12 @@ class Functions:
         err, status = self.tcda_cmds.GetBlockState(self.device_desc, self.block_n)
         status_str = str(status.BlockStateView)
         if status_str == "BLKSTATE_FREE":
+<<<<<<< HEAD
             if self.get_lid_state() == 0:
                 return "READY"
+=======
+            return "READY"
+>>>>>>> main
         elif status_str == "BLKSTATE_RUN":
             return "BUSY"
         elif status_str == "BLKSTATE_ERROR":
@@ -344,6 +348,5 @@ class Functions:
 
 if __name__ == "__main__":
     test = Functions()
-    # test.lid_open()
-    test.lid_close()
+    test.open_lid()
 
