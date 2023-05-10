@@ -18,7 +18,7 @@ class Biometra:
         self.protocol_status = 1
         self.robot_status = self.functions.robot_status
         self.status_msg = self.functions.status_msg
-    
+        
     def check_error_logs(self):
         err, all_error_log_files = self.functions.error_log_cmds.GetAllErrorLogFiles(self.functions.device_desc)
         data_list = all_error_log_files.DataList
