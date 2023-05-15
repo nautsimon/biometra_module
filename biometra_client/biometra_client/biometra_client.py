@@ -111,7 +111,7 @@ class biometraNode(Node):
 
         try:
             self.robot_status = self.biometra.functions.get_status()
-            self.get_logger().warn(str(self.robot_status))
+            # self.get_logger().warn(str(self.robot_status))
             # print("ROBOT STATUS", self.robot_status)
         
         except Exception as err:
