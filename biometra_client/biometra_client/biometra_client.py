@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
-import string
-from typing import List, Tuple
+
 
 import rclpy  # import Rospy
 from rclpy.node import Node  # import Rospy Node
@@ -11,6 +10,7 @@ from std_msgs.msg import String
 from wei_services.srv import WeiActions, WeiDescription
 
 from time import sleep
+import json
 
 from biometra_driver.biometra import Biometra
 
@@ -193,7 +193,7 @@ class biometraNode(Node):
             sleep(0.2)
         
         # action_handle = request.action_handle
-        vars = eval(request.vars)
+        vars = json.loads(request.vars)
         self.get_logger().info(str(vars))
         self.action_flag = "BUSY"
 
