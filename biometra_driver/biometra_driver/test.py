@@ -15,7 +15,16 @@ settings =  BiometraLibrary.ApplicationClasses.ApplicationSettingsClasses.Applic
 settings.LoadApplicationSettings()
 settings.CommunicationSettings.SerialComSettings.EnableCommunication = True 
 
+#TODO
+"""
+commands for ethernet connection
+info.GetAvailableDevices
+check library line 37375
 
+NetworkHelperClass.GetAllNetworkDeviceDescriptions()
+line 6784, 54157
+
+"""
 
 user = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses.UserInitials('ADM')
 passwd = BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses.UserPassword('Admin')
@@ -30,6 +39,8 @@ device_desc = find_device()
 
 block_cmds = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockCmds(settings.CommunicationSettings, device_desc)
 block_n = BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses.BlockNumber(1)
+
+network = BiometraLibrary.CommunicationClasses.NetworkClasses.NetworkHelperClass
 
 program_cmds = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgramCmds(settings.CommunicationSettings, device_desc)
 # pcrProgram = BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.PcrProgram

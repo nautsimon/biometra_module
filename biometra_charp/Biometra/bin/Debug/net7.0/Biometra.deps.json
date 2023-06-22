@@ -1,0 +1,57 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "Biometra/1.0.0": {
+        "dependencies": {
+          "BiometraLibraryNet": "1.10.0.0"
+        },
+        "runtime": {
+          "Biometra.dll": {}
+        }
+      },
+      "BiometraLibraryNet/1.10.0.0": {
+        "runtime": {
+          "BiometraLibraryNet.dll": {
+            "assemblyVersion": "1.10.0.0",
+            "fileVersion": "1.10.0.0"
+          }
+        }
+      },
+      "BiometraLibraryResources/1.0.0.0": {
+        "runtime": {
+          "BiometraLibraryResources.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "resources": {
+          "de-DE/BiometraLibraryResources.resources.dll": {
+            "locale": "de-DE"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Biometra/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BiometraLibraryNet/1.10.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BiometraLibraryResources/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
