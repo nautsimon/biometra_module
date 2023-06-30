@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/abestroka/Projects/Biometra/Biometra/Biometra.csproj",
+      "projectUniqueName": "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_charp/Biometra/Biometra.csproj",
       "projectName": "Biometra",
-      "projectPath": "/Users/abestroka/Projects/Biometra/Biometra/Biometra.csproj",
+      "projectPath": "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_charp/Biometra/Biometra.csproj",
       "packagesPath": "/Users/abestroka/.nuget/packages/",
-      "outputPath": "/Users/abestroka/Projects/Biometra/Biometra/obj/",
+      "outputPath": "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_charp/Biometra/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/abestroka/.nuget/NuGet/NuGet.Config"
