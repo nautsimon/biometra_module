@@ -40,6 +40,15 @@ class Main_Client
 
     }
 
+    void connect_serial()
+    {
+        //settings
+        ApplicationSettings.CommunicationSettings.SerialComSettings.SerialComParams = new BiometraLibrary.CommunicationClasses.SerialComClasses.SerialParams(BiometraLibrary.CommunicationClasses.SerialComClasses.EnBaudRate.BAUDRATE_115200, BiometraLibrary.CommunicationClasses.SerialComClasses.EnParity.PARITY_NONE, BiometraLibrary.CommunicationClasses.SerialComClasses.EnDataBits.DATABITS_8, BiometraLibrary.CommunicationClasses.SerialComClasses.EnStopBits.STOPBITS_ONE, BiometraLibrary.CommunicationClasses.EnCommunicationTimeout.TIMEOUT_1500ms);
+
+        //enable serial commmunication
+        ApplicationSettings.CommunicationSettings.SerialComSettings.EnableCommunication = true;
+    }
+
     // Potential TODO: set default file location
 
     AdvancedList<DeviceDescription> get_device_list()
@@ -197,7 +206,8 @@ class Main_Client
 
     void Main()
     {
-        connect_network();
+        //connect_network();
+        connect_serial();
         Console.WriteLine("Network Connection Enabled");
         AdvancedList<DeviceDescription> device_list = get_device_list();
         try
