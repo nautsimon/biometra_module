@@ -16,6 +16,8 @@ using BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditCl
 using BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses;
 using BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses;
 
+//TODO: maybe add hardcoded in variables for device number and block number
+
 namespace Biometra
 {
 
@@ -54,6 +56,8 @@ namespace Biometra
         {
             //Search all available devices
             InfoCmds.GetAllComAvailableDevices(out DataSetList<AvailableDevice, NotAvailableDevice> foundDeviceList);
+
+            Console.WriteLine("found devices", foundDeviceList);
 
             //Read descriptions from all available devices
 
@@ -203,13 +207,50 @@ namespace Biometra
 
         }
 
+        static string get_state(AdvancedList<DeviceDescription> deviceList)
+        {
+            try
+            {
+                //create communication object
+                using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+                {
+                    CheckStateResult deviceComResult = tcdaCmds.GetBlockState(deviceList[0], new BlockNumber(1), out BlockState blockState);
+                    return deviceComResult.ToString();
+                }
+
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            return "ERROR in get_state function";
+        }
+
+        static string get_lid_state(AdvancedList<DeviceDescription> deviceList)
+        {
+            try
+            {
+                using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+                {
+                    CheckStateResult deviceComResult = tcdaCmds.GetMotLidState(deviceList[0], out DataSetList<MotLidState, BlockNumber> motLidStateList);
+                    return deviceComResult.ToString();
+                }
+
+
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            return "Error in get_lid_state function";
+        }
+
         static void Main(string[] args)
         {
             ApplicationSettings.LoadApplicationSettings();
             ApplicationSettings.SaveApplicationSettings();
             //Console.WriteLine("HEREeeeee");
             //connect_network();
-            connect_serial();
+            //connect_serial();
+            try
+            {
+                connect_serial();
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
             Console.WriteLine("Network Connection Enabled");
             AdvancedList<DeviceDescription> device_list = get_device_list();
             try
@@ -219,35 +260,12 @@ namespace Biometra
             catch (Exception ex) { Console.WriteLine(ex.Message); }
             Console.WriteLine("Device Connected");
             login_user(device_list);
+            get_state(device_list);
             open_lid(device_list);
         }
     }
 }
 
 
-/*
-string get_state(AdvancedList<DeviceDescription> deviceList
-{
-    try
-    {
-        using TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
-        {
-        CheckStateResult deviceComResult = tcdaCmds.GetBlockState(deviceList[0], blockNumber, out BlockState blockState);
-        }
-    }
-    catch (Exception ex) { Console.WriteLine(ex.Message); }
-}
-*/
-
-/*
-
-try
-{
-CheckStateResult deviceComResult = TcdaCmds.GetBlockState(deviceList[0], new BlockNumber(1), out BlockState blockState)
-        //TcdaCmds.GetBlockState(deviceList[0], new BlockNumber(1), out BlockState blockState)
-}
-catch (Exception ex) { Console.WriteLine(ex.Message); }
-
-*/
 // run log file TODO
 

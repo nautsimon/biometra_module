@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5YOEgtn67jKU0Q7H4uf5UZo3RQuxzouW4fCa9YGj3qYohfK1Fy6V0qdWGwOTHhe5VgmHD3qao1f7zvhfW4l1UQ==",
+  "dgSpecHash": "7bfGW5jhs5csgUJ6bg2h9PHZj3hgWMhwQXZ8E5kQOFpFOs5Ix5kls/RB/Hd19mwDUlIRvd+FSnU/39ZtkSLDbA==",
   "success": true,
-  "projectFilePath": "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_charp/Biometra/Biometra.csproj",
+  "projectFilePath": "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_csharp/Biometra/Biometra.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
