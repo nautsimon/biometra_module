@@ -15,6 +15,7 @@ using BiometraLibrary.DeviceExtComClasses.BlockClasses;
 using BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses;
 using BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses;
 using BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses;
+using BiometraLibrary.HelperClasses.UnitHelperClasses;
 
 //TODO: maybe add hardcoded in variables for device number and block number
 
@@ -238,6 +239,65 @@ namespace Biometra
             catch (Exception ex) { Console.WriteLine(ex.Message); }
             return "Error in get_lid_state function";
         }
+
+        static string check_temp_lid(AdvancedList<DeviceDescription> deviceList)
+        {
+            try
+            {
+                using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+                {
+                    CheckStateResult deviceComResult = tcdaCmds.GetHeatedLidTemp(deviceList[0], new BlockNumber(1), out Temperature heatedLidTemp);
+                }
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            return "Error in get_lid_state function";
+        }
+
+        static string get_temp_left(AdvancedList<DeviceDescription> deviceList)
+        {
+            try
+            {
+                using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+                {
+                    CheckStateResult deviceComResult = tcdaCmds.GetBlockTempLeft(deviceList[0], new BlockNumber(1), out Temperature leftBlockTemp);
+                    return deviceComResult.ToString();
+                }
+
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            return "Error in get_temp_left function";
+        }
+
+        static string get_temp_right(AdvancedList<DeviceDescription> deviceList)
+        {
+            try
+            {
+                using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+                {
+                    CheckStateResult deviceComResult = tcdaCmds.GetBlockTempRight(deviceList[0], new BlockNumber(1), out Temperature rightBlockTemp);
+                    return deviceComResult.ToString();
+                }
+
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            return "Error in get_temp_right function";
+        }
+
+        static string get_temp_middle(AdvancedList<DeviceDescription> deviceList)
+        {
+            try
+            {
+                using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+                {
+                    CheckStateResult deviceComResult = tcdaCmds.GetBlockTempMiddle(deviceList[0], new BlockNumber(1), out Temperature middleBlockTemp);
+                    return deviceComResult.ToString();
+                }
+
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            return "Error in get_temp_middle function";
+        }
+
 
         static void Main(string[] args)
         {
