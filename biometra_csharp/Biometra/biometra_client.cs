@@ -17,8 +17,6 @@ using BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses;
 using BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses;
 using BiometraLibrary.HelperClasses.UnitHelperClasses;
 
-//TODO: maybe add hardcoded in variables for device number and block number
-
 namespace Biometra
 {
 
@@ -47,6 +45,9 @@ namespace Biometra
             //settings
             ApplicationSettings.CommunicationSettings.SerialComSettings.SerialComParams = new BiometraLibrary.CommunicationClasses.SerialComClasses.SerialParams(BiometraLibrary.CommunicationClasses.SerialComClasses.EnBaudRate.BAUDRATE_115200, BiometraLibrary.CommunicationClasses.SerialComClasses.EnParity.PARITY_NONE, BiometraLibrary.CommunicationClasses.SerialComClasses.EnDataBits.DATABITS_8, BiometraLibrary.CommunicationClasses.SerialComClasses.EnStopBits.STOPBITS_ONE, BiometraLibrary.CommunicationClasses.EnCommunicationTimeout.TIMEOUT_1500ms);
 
+            // disable COM-port filtering
+            ApplicationSettings.CommunicationSettings.SerialComSettings.AllComPorts = true;
+
             //enable serial commmunication
             ApplicationSettings.CommunicationSettings.SerialComSettings.EnableCommunication = true;
         }
@@ -57,9 +58,7 @@ namespace Biometra
         {
             //Search all available devices
             InfoCmds.GetAllComAvailableDevices(out DataSetList<AvailableDevice, NotAvailableDevice> foundDeviceList);
-
-            Console.WriteLine("found devices", foundDeviceList);
-
+            Console.WriteLine(foundDeviceList);
             //Read descriptions from all available devices
 
             //public class deviceList?
@@ -101,11 +100,6 @@ namespace Biometra
 
         }
 
-        // wont need to log a user off, or create new users
-
-
-        // device settings? maybe... TODO: section 5.4.2
-
         // Retrieve program from the device
 
         //retreieve all available programs from device
@@ -144,7 +138,6 @@ namespace Biometra
         }
 
         //Stop program
-        //public
         static void stop_program(AdvancedList<DeviceDescription> deviceList)
         {
             try
@@ -161,7 +154,6 @@ namespace Biometra
         //Pause/cont program?
 
         //open lid TODO: pass device and block numbers as variables
-        /*public*/
         static void open_lid(AdvancedList<DeviceDescription> deviceList)
         {
             try
@@ -299,33 +291,21 @@ namespace Biometra
         }
 
 
+
+
         static void Main(string[] args)
         {
             ApplicationSettings.LoadApplicationSettings();
-            ApplicationSettings.SaveApplicationSettings();
-            //Console.WriteLine("HEREeeeee");
             //connect_network();
-            //connect_serial();
-            try
-            {
-                connect_serial();
-            }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            connect_serial();
+            ApplicationSettings.SaveApplicationSettings();
             Console.WriteLine("Network Connection Enabled");
             AdvancedList<DeviceDescription> device_list = get_device_list();
-            try
-            {
-                get_device_info(device_list);
-            }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            get_device_info(device_list);
             Console.WriteLine("Device Connected");
             login_user(device_list);
-            get_state(device_list);
             open_lid(device_list);
         }
     }
 }
-
-
-// run log file TODO
 
