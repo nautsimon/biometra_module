@@ -16,6 +16,8 @@ using BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditCl
 using BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses;
 using BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses;
 using BiometraLibrary.HelperClasses.UnitHelperClasses;
+using BiometraLibrary.CommunicationClasses.SerialComClasses;
+using System.IO.Ports;
 
 namespace Biometra
 {
@@ -48,6 +50,7 @@ namespace Biometra
             // disable COM-port filtering
             ApplicationSettings.CommunicationSettings.SerialComSettings.AllComPorts = true;
 
+
             //enable serial commmunication
             ApplicationSettings.CommunicationSettings.SerialComSettings.EnableCommunication = true;
         }
@@ -58,7 +61,6 @@ namespace Biometra
         {
             //Search all available devices
             InfoCmds.GetAllComAvailableDevices(out DataSetList<AvailableDevice, NotAvailableDevice> foundDeviceList);
-            Console.WriteLine(foundDeviceList);
             //Read descriptions from all available devices
 
             //public class deviceList?
@@ -103,7 +105,7 @@ namespace Biometra
         // Retrieve program from the device
 
         //retreieve all available programs from device
-        static void get_program_list(AdvancedList<DeviceDescription> deviceList)
+        static string get_program_list(AdvancedList<DeviceDescription> deviceList)
         {
             try
             {
@@ -112,9 +114,11 @@ namespace Biometra
                 {
                     // Read all availbel programs
                     CheckStateResult checkStateResult = programCmds.GetProgramOverview(deviceList[0], new UserInitials("ADM"), out DataSetList<ProgramInfos> programList);
+                    return programList.ToString();
                 }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
+            return "ERROR: program list could not be retrieved";
         }
 
 
@@ -208,7 +212,7 @@ namespace Biometra
                 using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
                 {
                     CheckStateResult deviceComResult = tcdaCmds.GetBlockState(deviceList[0], new BlockNumber(1), out BlockState blockState);
-                    return deviceComResult.ToString();
+                    return blockState.ToString();
                 }
 
             }
@@ -216,14 +220,15 @@ namespace Biometra
             return "ERROR in get_state function";
         }
 
-        static string get_lid_state(AdvancedList<DeviceDescription> deviceList)
+        static string get_lid_state(AdvancedList<DeviceDescription> deviceList) //TODO
         {
             try
             {
                 using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
                 {
                     CheckStateResult deviceComResult = tcdaCmds.GetMotLidState(deviceList[0], out DataSetList<MotLidState, BlockNumber> motLidStateList);
-                    return deviceComResult.ToString();
+
+                    return motLidStateList.ToString();
                 }
 
 
@@ -239,6 +244,7 @@ namespace Biometra
                 using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
                 {
                     CheckStateResult deviceComResult = tcdaCmds.GetHeatedLidTemp(deviceList[0], new BlockNumber(1), out Temperature heatedLidTemp);
+                    return heatedLidTemp.ToString();
                 }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
@@ -304,7 +310,12 @@ namespace Biometra
             get_device_info(device_list);
             Console.WriteLine("Device Connected");
             login_user(device_list);
-            open_lid(device_list);
+            //open_lid(device_list);
+            //close_lid(device_list);
+            Console.WriteLine(get_lid_state(device_list));
+            Console.WriteLine(get_state(device_list)); // TODO: translate
+            string a = check_temp_lid(device_list);
+            Console.WriteLine(a);
         }
     }
 }

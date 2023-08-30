@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_csharp/Biometra/Biometra.csproj": {}
+    "C:\\Users\\svcaibio\\Dev\\biometra_module\\biometra_csharp\\Biometra\\Biometra.csproj": {}
   },
   "projects": {
-    "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_csharp/Biometra/Biometra.csproj": {
+    "C:\\Users\\svcaibio\\Dev\\biometra_module\\biometra_csharp\\Biometra\\Biometra.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_csharp/Biometra/Biometra.csproj",
+        "projectUniqueName": "C:\\Users\\svcaibio\\Dev\\biometra_module\\biometra_csharp\\Biometra\\Biometra.csproj",
         "projectName": "Biometra",
-        "projectPath": "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_csharp/Biometra/Biometra.csproj",
-        "packagesPath": "/Users/abestroka/.nuget/packages/",
-        "outputPath": "/Users/abestroka/Argonne/git_repos/biometra_module/biometra_csharp/Biometra/obj/",
+        "projectPath": "C:\\Users\\svcaibio\\Dev\\biometra_module\\biometra_csharp\\Biometra\\Biometra.csproj",
+        "packagesPath": "C:\\Users\\svcaibio\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\svcaibio\\Dev\\biometra_module\\biometra_csharp\\Biometra\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/abestroka/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\svcaibio\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -37,6 +39,12 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "System.IO.Ports": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -53,7 +61,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.304/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     }
