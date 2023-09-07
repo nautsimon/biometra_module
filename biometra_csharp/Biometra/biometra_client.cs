@@ -237,7 +237,7 @@ namespace Biometra
             return "Error in get_lid_state function";
         }
 
-        static string check_temp_lid(AdvancedList<DeviceDescription> deviceList)
+        static string get_temp_lid(AdvancedList<DeviceDescription> deviceList)
         {
             try
             {
@@ -296,6 +296,19 @@ namespace Biometra
             return "Error in get_temp_middle function";
         }
 
+        static List<string> get_temp_all(AdvancedList<DeviceDescription> deviceList)
+        {
+
+            List<string> temp_list = new List<string>();
+            temp_list.Add(get_temp_left(deviceList));
+            temp_list.Add(get_temp_right(deviceList));
+            temp_list.Add(get_temp_middle(deviceList));
+            temp_list.Add(get_temp_lid(deviceList));
+            return temp_list;
+
+        }
+  
+
 
 
 
@@ -314,7 +327,7 @@ namespace Biometra
             //close_lid(device_list);
             Console.WriteLine(get_lid_state(device_list));
             Console.WriteLine(get_state(device_list)); // TODO: translate
-            string a = check_temp_lid(device_list);
+            string a = get_temp_lid(device_list);
             Console.WriteLine(a);
         }
     }
