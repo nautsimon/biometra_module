@@ -126,7 +126,7 @@ public class Biometra_Functions
     // Creating a program TODO
 
     //Starting a program
-    public static void run_program(AdvancedList<DeviceDescription> deviceList)
+    public static void run_program(AdvancedList<DeviceDescription> deviceList, int prog)
     {
         try
         {
@@ -134,7 +134,7 @@ public class Biometra_Functions
             using (BlockCmds blockCmds = new BlockCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
             {
                 // run program and start run log file
-                CheckStateResult checkStateResult = blockCmds.StartProgramOnBlock(deviceList[0], new UserInitials("ADM"), new ProgramNumber(4, EnProgramType.TYPE_PROGRAM), new BlockNumber(1), true);
+                CheckStateResult checkStateResult = blockCmds.StartProgramOnBlock(deviceList[0], new UserInitials("ADM"), new ProgramNumber((byte)prog, EnProgramType.TYPE_PROGRAM), new BlockNumber(1), true);
             }
         }
         catch (Exception ex) { Console.WriteLine(ex.Message); }
@@ -228,14 +228,14 @@ public class Biometra_Functions
             using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
             {
                 CheckStateResult deviceComResult = tcdaCmds.GetMotLidState(deviceList[0], out DataSetList<MotLidState, BlockNumber> motLidStateList);
-        
+                Console.WriteLine("getting lid state...");
                 string lid_state = motLidStateList.ToString();
-                if (lid_state == "0000 0000 0000 0011")
+                if (lid_state == "0000 0000 0000 0011;;")
                 {
                     //lid is open
                     return "open";
                 }
-                else if (lid_state == "0000 0000 0000 0101")
+                else if (lid_state == "0000 0000 0000 0101;;")
                 {
                     //lid is closed
                     return "closed";

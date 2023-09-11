@@ -43,7 +43,7 @@ public class Biometra
         byte[] msg;
         Dictionary<string, string> response;
 
-        using (var server = new ResponseSocket("tcp://*:2001")) //TODO: change
+        using (var server = new ResponseSocket("tcp://*:2002")) //TODO: change
         {
             while (action != "Shutdown")
             {
@@ -60,7 +60,7 @@ public class Biometra
                 {
                     string prog = m.action_vars["program"];
                     int prog_int = Int32.Parse(prog);
-                    Biometra_Functions.run_program(device_list); //TODO: add prog number as arg
+                    Biometra_Functions.run_program(device_list, prog_int); //TODO: add prog number as arg
                     System.Threading.Thread.Sleep(10000);
                     //TODO: fucntion to countdown time till program is finished
                     int plate_status = Biometra_Functions.wait_until_ready(device_list);
@@ -124,6 +124,7 @@ public class Biometra
                 else
                 {
                     // TODO: no correct command
+                    Console.WriteLine("INVALID COMMAND");
                 }
             }
         }
