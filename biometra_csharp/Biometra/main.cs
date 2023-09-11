@@ -56,7 +56,10 @@ public class Biometra
                 Console.Out.WriteLine(m.action_handle);
                 if (m.action_handle == ("run_protocol"))
                 {
-                    //TODO
+                    string prog = m.action_vars["program"];
+                    int prog_int = Int32.Parse(prog);
+                    Biometra_Functions.run_program(device_list); //TODO: add prog number as arg
+
                 }
                 else if (m.action_handle == ("open_lid"))
                 {

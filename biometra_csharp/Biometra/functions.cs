@@ -203,20 +203,22 @@ public class Biometra_Functions
 
     }
 
-    public static string get_state(AdvancedList<DeviceDescription> deviceList)
+    public static bool get_state(AdvancedList<DeviceDescription> deviceList)
     {
-        try
-        {
-            //create communication object
-            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
-            {
-                CheckStateResult deviceComResult = tcdaCmds.GetBlockState(deviceList[0], new BlockNumber(1), out BlockState blockState);
-                return blockState.ToString();
-            }
 
+        //create communication object
+        Console.WriteLine("getting block state...");
+        using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+        {
+            CheckStateResult deviceComResult = tcdaCmds.GetBlockState(deviceList[0], new BlockNumber(1), out BlockState blockState);
+            bool s = blockState.ActiveBlock; //ActiveBlock or BlockStateView?
+            return s;
         }
-        catch (Exception ex) { Console.WriteLine(ex.Message); }
-        return "ERROR in get_state function";
+
+
+        //catch (Exception ex) { Console.WriteLine(ex.Message); }
+        //return "ERROR in get_state function";
+
     }
 
     public static string get_lid_state(AdvancedList<DeviceDescription> deviceList) //TODO
@@ -226,8 +228,25 @@ public class Biometra_Functions
             using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
             {
                 CheckStateResult deviceComResult = tcdaCmds.GetMotLidState(deviceList[0], out DataSetList<MotLidState, BlockNumber> motLidStateList);
+        
+                string lid_state = motLidStateList.ToString();
+                if (lid_state == "0000 0000 0000 0011")
+                {
+                    //lid is open
+                    return "open";
+                }
+                else if (lid_state == "0000 0000 0000 0101")
+                {
+                    //lid is closed
+                    return "closed";
+                }
+                else
+                {
+                    // lid is in motion, loop back?
+                    return "busy";
+                }
+                    
 
-                return motLidStateList.ToString();
             }
 
 
@@ -235,6 +254,23 @@ public class Biometra_Functions
         catch (Exception ex) { Console.WriteLine(ex.Message); }
         return "Error in get_lid_state function";
     }
+
+    // TODO: look into command : checkallblocksfree
+
+    //public static bool can_open(AdvancedList<DeviceDescription> deviceList)
+    //{
+    //    try
+    //    {
+    //        using (MotLidState motLidState = new MotLidState(ApplicationSettings.CommunicationSettings, deviceList[0]))
+    //        {
+    //            //CheckStateResult deviceComResult = motLidState.CanOpenLid(deviceList[0], out string canopen);
+    //            bool canopen = motLidState.CanOpenLid;
+    //            return canopen;
+    //        }
+
+    //    }
+    //    catch (Exception ex) { Console.WriteLine(ex.Message); }
+    //    return false;
 
     public static string get_temp_lid(AdvancedList<DeviceDescription> deviceList)
     {
@@ -320,6 +356,77 @@ public class Biometra_Functions
         Console.WriteLine("User logged in");
 
         return device_list;
+    }
+
+    public static int check_clear(AdvancedList<DeviceDescription> deviceList)
+    {
+        // Checks to make sure the device is open, and not running
+
+        // check if device is running
+        bool is_active = get_state(deviceList);
+        if (is_active == true) // block is active
+        {
+            Console.WriteLine("Protocol still in progress, waiting...");
+            System.Threading.Thread.Sleep(5000);
+            return 1;
+        }
+        else
+        {
+            // check if device open
+            string lid_status = get_lid_state(deviceList);
+            if (lid_status == "busy")
+            {
+                Console.WriteLine("lid not open or closed, waiting...");
+                System.Threading.Thread.Sleep(10000);
+                string new_lid_status = get_lid_state(deviceList);
+                return 1;
+                //if (new_lid_status == "busy")
+                //{
+                //    Console.WriteLine("ERROR: lid stuck in busy state"); //TODO: cycle close and open here
+                //    return -1;
+                //}
+            }
+            if (lid_status == "closed")
+            {
+                Console.WriteLine("lid is closed, opening...");
+                open_lid(deviceList);
+                System.Threading.Thread.Sleep(10000);
+                return 1;
+            }
+            else // lid is open, and block is not active
+            {
+                // check temp?
+                return 0;
+            }
+        }
+
+
+    }
+
+    public static int wait_until_ready(AdvancedList<DeviceDescription> deviceList)
+    {
+        int plate_status = 1;
+        while (plate_status == 1)
+        {
+            plate_status = check_clear(deviceList);
+            if (plate_status == -1)
+            {
+                Console.WriteLine("ERROR"); // TODO: need get_error function
+                return -1;
+            }
+
+            System.Threading.Thread.Sleep(5000);
+        }
+        if (plate_status == 0)
+        {
+            Console.WriteLine("Plate ready to be retrieved");
+            return 0;
+        }
+        else
+        {
+            Console.WriteLine("ERROR:unknown plate status");
+            return -1;
+        }
     }
   
 
