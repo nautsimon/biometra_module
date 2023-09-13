@@ -1,30 +1,9 @@
-﻿using BiometraLibrary.ApplicationClasses.ApplicationSettingsClasses;
+﻿using BiometraLibrary.DeviceExtComClasses.SystemClasses.InfoClasses.InfoDataClasses;
 using BiometraLibrary.HelperClasses.ListHelperClasses;
-using BiometraLibrary.CommunicationClasses.NetworkClasses;
-using BiometraLibrary.DeviceExtComClasses.SystemClasses.InfoClasses;
-using BiometraLibrary.DeviceExtComClasses.SystemClasses.InfoClasses.InfoDataClasses;
-using BiometraLibrary.HelperClasses.DataSetHelperClasses;
-using BiometraLibrary.DeviceExtComClasses.LoginOutClasses;
-using BiometraLibrary.HelperClasses.CheckStateHelperClasses;
-using BiometraLibrary.DeviceExtComClasses.DeviceComClasses;
-using BiometraLibrary.DeviceExtComClasses.ProgClasses;
-using BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses;
-using BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses;
-using BiometraLibrary.DeviceExtComClasses.BlockClasses;
-using BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses;
-using BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses;
-using BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses;
-using BiometraLibrary.HelperClasses.UnitHelperClasses;
-using BiometraLibrary.CommunicationClasses.SerialComClasses;
-using System.IO.Ports;
 using NetMQ;
-using Newtonsoft.Json;
 using NetMQ.Sockets;
-using System.Security.Cryptography;
+using Newtonsoft.Json;
 using System.Text;
-//using System.Net.Configuration;
-using System.Diagnostics;
-//using System.Windows.Forms;
 
 public class Biometra
 {
@@ -128,10 +107,6 @@ public class Biometra
                 }
             }
         }
-
-    }
-    public Biometra()
-    {
 
     }
 }

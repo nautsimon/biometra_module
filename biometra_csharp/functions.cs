@@ -1,23 +1,21 @@
 ﻿
 using BiometraLibrary.ApplicationClasses.ApplicationSettingsClasses;
-using BiometraLibrary.HelperClasses.ListHelperClasses;
 using BiometraLibrary.CommunicationClasses.NetworkClasses;
+using BiometraLibrary.DeviceExtComClasses.BlockClasses;
+using BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses;
+using BiometraLibrary.DeviceExtComClasses.DeviceComClasses;
+using BiometraLibrary.DeviceExtComClasses.LoginOutClasses;
+using BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses;
+using BiometraLibrary.DeviceExtComClasses.ProgClasses;
+using BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses;
+using BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses;
 using BiometraLibrary.DeviceExtComClasses.SystemClasses.InfoClasses;
 using BiometraLibrary.DeviceExtComClasses.SystemClasses.InfoClasses.InfoDataClasses;
-using BiometraLibrary.HelperClasses.DataSetHelperClasses;
-using BiometraLibrary.DeviceExtComClasses.LoginOutClasses;
-using BiometraLibrary.HelperClasses.CheckStateHelperClasses;
-using BiometraLibrary.DeviceExtComClasses.DeviceComClasses;
-using BiometraLibrary.DeviceExtComClasses.ProgClasses;
-using BiometraLibrary.DeviceExtComClasses.LoginOutClasses.UserClasses.UserDataClasses;
-using BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses;
-using BiometraLibrary.DeviceExtComClasses.BlockClasses;
-using BiometraLibrary.DeviceExtComClasses.ProgClasses.ProgDataClasses.ProgEditClasses;
-using BiometraLibrary.DeviceExtComClasses.BlockClasses.BlockDataClasses;
 using BiometraLibrary.DeviceExtComClasses.SystemClasses.TcdaClasses;
+using BiometraLibrary.HelperClasses.CheckStateHelperClasses;
+using BiometraLibrary.HelperClasses.DataSetHelperClasses;
+using BiometraLibrary.HelperClasses.ListHelperClasses;
 using BiometraLibrary.HelperClasses.UnitHelperClasses;
-using BiometraLibrary.CommunicationClasses.SerialComClasses;
-using System.IO.Ports;
 
 
 
@@ -245,7 +243,7 @@ public class Biometra_Functions
                     // lid is in motion, loop back?
                     return "busy";
                 }
-                    
+
 
             }
 
@@ -428,7 +426,7 @@ public class Biometra_Functions
             return -1;
         }
     }
-  
+
 
 
 
