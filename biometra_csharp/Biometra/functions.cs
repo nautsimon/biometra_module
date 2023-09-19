@@ -428,7 +428,49 @@ public class Biometra_Functions
             return -1;
         }
     }
-  
+
+   
+    public static int get_block_type(AdvancedList<DeviceDescription> deviceList, int device_num)
+    {
+        // will look at input device and determine block type
+        InfoCmds infoCmds = new InfoCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]);
+        infoCmds.GetBlockTypeNum(deviceList[device_num], out int iBlockTypeNum);
+        if (iBlockTypeNum == 48)
+        {
+            return 96;
+        }
+        else if (iBlockTypeNum == 49)
+        {
+            return 384;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+    public static int find_device(AdvancedList<DeviceDescription> deviceList, int plate_type)
+    {
+        // finds a biometra that will fit the inputed plate type
+        int device_num = -1;
+        for (int i = 0; i < deviceList.Count; i++)
+        {
+            int block = get_block_type(deviceList, i);
+            if (block == plate_type)
+            {
+                device_num = block;
+                break;
+            }
+        }
+        if (device_num == -1){
+            Console.WriteLine("No device with inputed block type found");
+        }
+        return device_num;
+        
+    }
+
+
+
 
 
 
