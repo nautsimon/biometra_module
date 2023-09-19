@@ -132,6 +132,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .vscode/
+*/.vs/
 
 # Config files
 # we will leave the *.yaml files public
