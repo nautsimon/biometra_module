@@ -16,7 +16,8 @@ public class Biometra
 
     public static void Main(string[] args)
     {
-        AdvancedList<DeviceDescription> device_list = Biometra_Functions.Connect();
+
+        AdvancedList<DeviceDescription> device_list = Biometra_Functions.FindDevices();
         string action = "READY";
         string status = "";
         byte[] msg;
@@ -35,14 +36,17 @@ public class Biometra
                 Console.Out.WriteLine(t);
                 Message m = JsonConvert.DeserializeObject<Message>(t);
                 Console.Out.WriteLine(m.action_handle);
+                string plate_type = m.action_vars["plate_type"];
+                int plate_type_int = Int32.Parse(plate_type);
+                int device_num = Biometra_Functions.Connect(device_list, plate_type_int);
                 if (m.action_handle == ("run_protocol"))
                 {
                     string prog = m.action_vars["program"];
                     int prog_int = Int32.Parse(prog);
-                    Biometra_Functions.run_program(device_list, prog_int); //TODO: add prog number as arg
+                    Biometra_Functions.run_program(device_list, prog_int, device_num); //TODO: add prog number as arg
                     System.Threading.Thread.Sleep(10000);
                     //TODO: fucntion to countdown time till program is finished
-                    int plate_status = Biometra_Functions.wait_until_ready(device_list);
+                    int plate_status = Biometra_Functions.wait_until_ready(device_list, device_num);
                     //TODO: raise error if plate_status is -1
 
                     // send response when protocol is finished
@@ -55,7 +59,7 @@ public class Biometra
                 }
                 else if (m.action_handle == ("open_lid"))
                 {
-                    Biometra_Functions.open_lid(device_list);
+                    Biometra_Functions.open_lid(device_list, device_num);
                     System.Threading.Thread.Sleep(25000);
                     //TODO: check if lid is closed, then check if its open
                     response = new Dictionary<string, string>();
@@ -68,7 +72,7 @@ public class Biometra
                 }
                 else if (m.action_handle == ("close_lid"))
                 {
-                    Biometra_Functions.close_lid(device_list);
+                    Biometra_Functions.close_lid(device_list, device_num);
                     System.Threading.Thread.Sleep(25000);
                     //TODO: check if lid is open, then check if its closed
                     response = new Dictionary<string, string>();
@@ -80,7 +84,7 @@ public class Biometra
                 }
                 else if (m.action_handle == ("get_status"))
                 {
-                    bool is_active = Biometra_Functions.get_state(device_list);
+                    bool is_active = Biometra_Functions.get_state(device_list, device_num);
                     if (is_active == true)
                     {
                         response = new Dictionary<string, string>();

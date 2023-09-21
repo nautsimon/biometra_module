@@ -69,9 +69,9 @@ public class Biometra_Functions
     }
 
     //Read device information
-    public static void get_device_info(AdvancedList<DeviceDescription> deviceList)//TODO: pass in device list?)
+    public static void get_device_info(AdvancedList<DeviceDescription> deviceList, int device_num)//TODO: pass in device list?)
     {
-        CheckStateResult checkStateResult = DeviceCom.GetInformationsByDeviceDescription(deviceList[0], out DeviceInformations deviceInformations);
+        CheckStateResult checkStateResult = DeviceCom.GetInformationsByDeviceDescription(deviceList[device_num], out DeviceInformations deviceInformations);
 
     }
 
@@ -85,15 +85,15 @@ public class Biometra_Functions
     // Won't need to mess with users, will always use admin
 
     // log in as admin
-    public static void login_user(AdvancedList<DeviceDescription> deviceList)
+    public static void login_user(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
             //Create object for communication
-            using (LoginOutCmds loginOutCmds = new LoginOutCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (LoginOutCmds loginOutCmds = new LoginOutCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
                 //Register user ADM
-                CheckStateResult checkStateResult = loginOutCmds.LoginUser(deviceList[0], new UserInitials("ADM"), new UserPassword("Admin"));
+                CheckStateResult checkStateResult = loginOutCmds.LoginUser(deviceList[device_num], new UserInitials("ADM"), new UserPassword("Admin"));
             }
             // Catch excxeption, triggered when user already logged in
         }
@@ -104,7 +104,7 @@ public class Biometra_Functions
     // Retrieve program from the device
 
     //retreieve all available programs from device
-    public static string get_program_list(AdvancedList<DeviceDescription> deviceList)
+    public static string get_program_list(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
@@ -112,7 +112,7 @@ public class Biometra_Functions
             using (ProgramCmds programCmds = new ProgramCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
             {
                 // Read all availbel programs
-                CheckStateResult checkStateResult = programCmds.GetProgramOverview(deviceList[0], new UserInitials("ADM"), out DataSetList<ProgramInfos> programList);
+                CheckStateResult checkStateResult = programCmds.GetProgramOverview(deviceList[device_num], new UserInitials("ADM"), out DataSetList<ProgramInfos> programList);
                 return programList.ToString();
             }
         }
@@ -126,29 +126,29 @@ public class Biometra_Functions
     // Creating a program TODO
 
     //Starting a program
-    public static void run_program(AdvancedList<DeviceDescription> deviceList, int prog)
+    public static void run_program(AdvancedList<DeviceDescription> deviceList, int prog, int device_num)
     {
         try
         {
             //create communication object
-            using (BlockCmds blockCmds = new BlockCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (BlockCmds blockCmds = new BlockCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
                 // run program and start run log file
-                CheckStateResult checkStateResult = blockCmds.StartProgramOnBlock(deviceList[0], new UserInitials("ADM"), new ProgramNumber((byte)prog, EnProgramType.TYPE_PROGRAM), new BlockNumber(1), true);
+                CheckStateResult checkStateResult = blockCmds.StartProgramOnBlock(deviceList[device_num], new UserInitials("ADM"), new ProgramNumber((byte)prog, EnProgramType.TYPE_PROGRAM), new BlockNumber(1), true);
             }
         }
         catch (Exception ex) { Console.WriteLine(ex.Message); }
     }
 
     //Stop program
-    public static void stop_program(AdvancedList<DeviceDescription> deviceList)
+    public static void stop_program(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
             //Create commmunication object
-            using (BlockCmds blockCmds = new BlockCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (BlockCmds blockCmds = new BlockCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
-                CheckStateResult checkStateResult = blockCmds.StopProgramOnBlock(deviceList[0], new BlockNumber(1));
+                CheckStateResult checkStateResult = blockCmds.StopProgramOnBlock(deviceList[device_num], new BlockNumber(1));
             }
         }
         catch (Exception ex) { Console.WriteLine(ex.Message); }
@@ -157,14 +157,14 @@ public class Biometra_Functions
     //Pause/cont program?
 
     //open lid TODO: pass device and block numbers as variables
-    public static void open_lid(AdvancedList<DeviceDescription> deviceList)
+    public static void open_lid(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
             //Create communication object
-            using (BlockCmds blockCmds = new BlockCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (BlockCmds blockCmds = new BlockCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
-                CheckStateResult checkStateResult = blockCmds.OpenMotLid(deviceList[0], new BlockNumber(1));
+                CheckStateResult checkStateResult = blockCmds.OpenMotLid(deviceList[device_num], new BlockNumber(1));
             }
         }
         catch (Exception ex) { Console.WriteLine(ex.Message); }
@@ -172,14 +172,14 @@ public class Biometra_Functions
 
     //close lid TODO: pass device and block numbers as variables
     /*public*/
-    public static void close_lid(AdvancedList<DeviceDescription> deviceList)
+    public static void close_lid(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
             //Create communication object
-            using (BlockCmds blockCmds = new BlockCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (BlockCmds blockCmds = new BlockCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
-                CheckStateResult checkStateResult = blockCmds.CloseMotLid(deviceList[0], new BlockNumber(1));
+                CheckStateResult checkStateResult = blockCmds.CloseMotLid(deviceList[device_num], new BlockNumber(1));
             }
         }
         catch (Exception ex) { Console.WriteLine(ex.Message); }
@@ -188,29 +188,29 @@ public class Biometra_Functions
 
     // current block parameters list
     /*public*/
-    public static void check_params(AdvancedList<DeviceDescription> deviceList)
+    public static void check_params(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
             //create communication object
-            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
                 //Query block parameters for all existing blocks
-                CheckStateResult checkStateResult = tcdaCmds.GetBlockParamsDataSet(deviceList[0], out DataSetList<BlockParams, BlockNumber> blockParamList);
+                CheckStateResult checkStateResult = tcdaCmds.GetBlockParamsDataSet(deviceList[device_num], out DataSetList<BlockParams, BlockNumber> blockParamList);
             }
         }
         catch (Exception ex) { Console.WriteLine(ex.Message); }
 
     }
 
-    public static bool get_state(AdvancedList<DeviceDescription> deviceList)
+    public static bool get_state(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
 
         //create communication object
         Console.WriteLine("getting block state...");
-        using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+        using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
         {
-            CheckStateResult deviceComResult = tcdaCmds.GetBlockState(deviceList[0], new BlockNumber(1), out BlockState blockState);
+            CheckStateResult deviceComResult = tcdaCmds.GetBlockState(deviceList[device_num], new BlockNumber(1), out BlockState blockState);
             bool s = blockState.ActiveBlock; //ActiveBlock or BlockStateView?
             return s;
         }
@@ -221,13 +221,13 @@ public class Biometra_Functions
 
     }
 
-    public static string get_lid_state(AdvancedList<DeviceDescription> deviceList) //TODO
+    public static string get_lid_state(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
-            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
-                CheckStateResult deviceComResult = tcdaCmds.GetMotLidState(deviceList[0], out DataSetList<MotLidState, BlockNumber> motLidStateList);
+                CheckStateResult deviceComResult = tcdaCmds.GetMotLidState(deviceList[device_num], out DataSetList<MotLidState, BlockNumber> motLidStateList);
                 Console.WriteLine("getting lid state...");
                 string lid_state = motLidStateList.ToString();
                 if (lid_state == "0000 0000 0000 0011;;")
@@ -272,13 +272,13 @@ public class Biometra_Functions
     //    catch (Exception ex) { Console.WriteLine(ex.Message); }
     //    return false;
 
-    public static string get_temp_lid(AdvancedList<DeviceDescription> deviceList)
+    public static string get_temp_lid(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
-            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
-                CheckStateResult deviceComResult = tcdaCmds.GetHeatedLidTemp(deviceList[0], new BlockNumber(1), out Temperature heatedLidTemp);
+                CheckStateResult deviceComResult = tcdaCmds.GetHeatedLidTemp(deviceList[device_num], new BlockNumber(1), out Temperature heatedLidTemp);
                 return heatedLidTemp.ToString();
             }
         }
@@ -286,13 +286,13 @@ public class Biometra_Functions
         return "Error in get_lid_state function";
     }
 
-    public static string get_temp_left(AdvancedList<DeviceDescription> deviceList)
+    public static string get_temp_left(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
-            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
-                CheckStateResult deviceComResult = tcdaCmds.GetBlockTempLeft(deviceList[0], new BlockNumber(1), out Temperature leftBlockTemp);
+                CheckStateResult deviceComResult = tcdaCmds.GetBlockTempLeft(deviceList[device_num], new BlockNumber(1), out Temperature leftBlockTemp);
                 return deviceComResult.ToString();
             }
 
@@ -301,13 +301,13 @@ public class Biometra_Functions
         return "Error in get_temp_left function";
     }
 
-    public static string get_temp_right(AdvancedList<DeviceDescription> deviceList)
+    public static string get_temp_right(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
-            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
-                CheckStateResult deviceComResult = tcdaCmds.GetBlockTempRight(deviceList[0], new BlockNumber(1), out Temperature rightBlockTemp);
+                CheckStateResult deviceComResult = tcdaCmds.GetBlockTempRight(deviceList[device_num], new BlockNumber(1), out Temperature rightBlockTemp);
                 return deviceComResult.ToString();
             }
 
@@ -316,13 +316,13 @@ public class Biometra_Functions
         return "Error in get_temp_right function";
     }
 
-    public static string get_temp_middle(AdvancedList<DeviceDescription> deviceList)
+    public static string get_temp_middle(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
         {
-            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[0]))
+            using (TcdaCmds tcdaCmds = new TcdaCmds(ApplicationSettings.CommunicationSettings, deviceList[device_num]))
             {
-                CheckStateResult deviceComResult = tcdaCmds.GetBlockTempMiddle(deviceList[0], new BlockNumber(1), out Temperature middleBlockTemp);
+                CheckStateResult deviceComResult = tcdaCmds.GetBlockTempMiddle(deviceList[device_num], new BlockNumber(1), out Temperature middleBlockTemp);
                 return deviceComResult.ToString();
             }
 
@@ -331,39 +331,46 @@ public class Biometra_Functions
         return "Error in get_temp_middle function";
     }
 
-    public static List<string> get_temp_all(AdvancedList<DeviceDescription> deviceList)
+    public static List<string> get_temp_all(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
 
         List<string> temp_list = new List<string>();
-        temp_list.Add(get_temp_left(deviceList));
-        temp_list.Add(get_temp_right(deviceList));
-        temp_list.Add(get_temp_middle(deviceList));
-        temp_list.Add(get_temp_lid(deviceList));
+        temp_list.Add(get_temp_left(deviceList, device_num));
+        temp_list.Add(get_temp_right(deviceList, device_num));
+        temp_list.Add(get_temp_middle(deviceList, device_num));
+        temp_list.Add(get_temp_lid(deviceList, device_num));
         return temp_list;
 
     }
 
-    public static AdvancedList<DeviceDescription> Connect()
+    public static AdvancedList<DeviceDescription> FindDevices()
     {
         ApplicationSettings.LoadApplicationSettings();
         connect_serial();
         ApplicationSettings.SaveApplicationSettings();
         Console.WriteLine("Serial Connection Enabled");
         AdvancedList<DeviceDescription> device_list = get_device_list();
-        get_device_info(device_list);
-        Console.WriteLine("Device Connected");
-        login_user(device_list);
-        Console.WriteLine("User logged in");
 
         return device_list;
     }
 
-    public static int check_clear(AdvancedList<DeviceDescription> deviceList)
+    public static int Connect(AdvancedList<DeviceDescription> deviceList, int plate_type)
+    {
+        // find correct device
+        int device_num = find_device(deviceList, plate_type);
+        //get_device_info(deviceList, device_num);
+        Console.WriteLine("Device Connected");
+        login_user(deviceList, device_num);
+        Console.WriteLine("User logged in");
+        return device_num;
+    }
+
+    public static int check_clear(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         // Checks to make sure the device is open, and not running
 
         // check if device is running
-        bool is_active = get_state(deviceList);
+        bool is_active = get_state(deviceList, device_num);
         if (is_active == true) // block is active
         {
             Console.WriteLine("Protocol still in progress, waiting...");
@@ -373,12 +380,12 @@ public class Biometra_Functions
         else
         {
             // check if device open
-            string lid_status = get_lid_state(deviceList);
+            string lid_status = get_lid_state(deviceList, device_num);
             if (lid_status == "busy")
             {
                 Console.WriteLine("lid not open or closed, waiting...");
                 System.Threading.Thread.Sleep(10000);
-                string new_lid_status = get_lid_state(deviceList);
+                string new_lid_status = get_lid_state(deviceList, device_num);
                 return 1;
                 //if (new_lid_status == "busy")
                 //{
@@ -389,7 +396,7 @@ public class Biometra_Functions
             if (lid_status == "closed")
             {
                 Console.WriteLine("lid is closed, opening...");
-                open_lid(deviceList);
+                open_lid(deviceList, device_num);
                 System.Threading.Thread.Sleep(10000);
                 return 1;
             }
@@ -403,12 +410,12 @@ public class Biometra_Functions
 
     }
 
-    public static int wait_until_ready(AdvancedList<DeviceDescription> deviceList)
+    public static int wait_until_ready(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         int plate_status = 1;
         while (plate_status == 1)
         {
-            plate_status = check_clear(deviceList);
+            plate_status = check_clear(deviceList, device_num);
             if (plate_status == -1)
             {
                 Console.WriteLine("ERROR"); // TODO: need get_error function
