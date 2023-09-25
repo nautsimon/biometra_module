@@ -25,8 +25,6 @@ using System.IO.Ports;
 public class Biometra_Functions
 {
 
-    //ApplicationSettings.CommunicationSettings.DeviceName = new ExternalDeviceName("BiometraLibTest");
-
     // Network connection
     public static void connect_network()
     {
@@ -54,7 +52,6 @@ public class Biometra_Functions
         ApplicationSettings.CommunicationSettings.SerialComSettings.EnableCommunication = true;
     }
 
-    // Potential TODO: set default file location
 
     public static AdvancedList<DeviceDescription> get_device_list()
     {
@@ -69,7 +66,7 @@ public class Biometra_Functions
     }
 
     //Read device information
-    public static void get_device_info(AdvancedList<DeviceDescription> deviceList, int device_num)//TODO: pass in device list?)
+    public static void get_device_info(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         CheckStateResult checkStateResult = DeviceCom.GetInformationsByDeviceDescription(deviceList[device_num], out DeviceInformations deviceInformations);
 
@@ -121,7 +118,6 @@ public class Biometra_Functions
     }
 
 
-    // ^ can be done async
 
     // Creating a program TODO
 
@@ -156,7 +152,6 @@ public class Biometra_Functions
     }
     //Pause/cont program?
 
-    //open lid TODO: pass device and block numbers as variables
     public static void open_lid(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
@@ -170,8 +165,6 @@ public class Biometra_Functions
         catch (Exception ex) { Console.WriteLine(ex.Message); }
     }
 
-    //close lid TODO: pass device and block numbers as variables
-    /*public*/
     public static void close_lid(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
@@ -187,7 +180,6 @@ public class Biometra_Functions
     }
 
     // current block parameters list
-    /*public*/
     public static void check_params(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
         try
@@ -256,21 +248,6 @@ public class Biometra_Functions
     }
 
     // TODO: look into command : checkallblocksfree
-
-    //public static bool can_open(AdvancedList<DeviceDescription> deviceList)
-    //{
-    //    try
-    //    {
-    //        using (MotLidState motLidState = new MotLidState(ApplicationSettings.CommunicationSettings, deviceList[0]))
-    //        {
-    //            //CheckStateResult deviceComResult = motLidState.CanOpenLid(deviceList[0], out string canopen);
-    //            bool canopen = motLidState.CanOpenLid;
-    //            return canopen;
-    //        }
-
-    //    }
-    //    catch (Exception ex) { Console.WriteLine(ex.Message); }
-    //    return false;
 
     public static string get_temp_lid(AdvancedList<DeviceDescription> deviceList, int device_num)
     {
@@ -465,7 +442,7 @@ public class Biometra_Functions
             int block = get_block_type(deviceList, i);
             if (block == plate_type)
             {
-                device_num = block;
+                device_num = i;
                 break;
             }
         }
