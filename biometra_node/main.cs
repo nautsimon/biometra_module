@@ -1,116 +1,48 @@
 ﻿using BiometraLibrary.DeviceExtComClasses.SystemClasses.InfoClasses.InfoDataClasses;
 using BiometraLibrary.HelperClasses.ListHelperClasses;
-using NetMQ;
-using NetMQ.Sockets;
-using Newtonsoft.Json;
-using System.Text;
+using Grapevine;
+using McMaster.Extensions.CommandLineUtils;
 
-public class Biometra
+namespace biometra_node
 {
-    public class Message
-    {
-        public string action_handle { get; set; }
-        public Dictionary<string, string> action_vars { get; set; }
-
-    }
-
-    public static void Main(string[] args)
+    public class Biometra
     {
 
-        AdvancedList<DeviceDescription> device_list = Biometra_Functions.FindDevices();
-        string action = "READY";
-        string status = "";
-        byte[] msg;
-        Dictionary<string, string> response;
+        public static int Main(string[] args) => CommandLineApplication.Execute<Biometra>(args);
 
-        using (var server = new ResponseSocket("tcp://*:2002"))
+        [Option(Description = "Server Port")]
+        public int Port { get; } = 2002;
+        [Option(Description = "Device ID")]
+        public int Id { get; } = 0;
+        [Option(Description = "Device Name (for logging)")]
+        public string Name { get; } = "HiG4 Centrifuge";
+        [Option(Description = "Whether or not to simulate the device")]
+        public bool Simulate { get; } = false;
+
+        public string state = ModuleStatus.IDLE;
+        private IRestServer server;
+        AdvancedList<DeviceDescription> device_list;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by CommandLineApplication.Execute above")]
+        private void OnExecute()
         {
-            while (action != "Shutdown")
-            {
-                Console.Out.WriteLine(server.ToString());
-                string t = server.ReceiveFrameString();
-                // TODO:Check to make sure that block is open and not running
 
+            InitializeBiometra();
+            server = RestServerBuilder.UseDefaults().Build();
+            server.Prefixes.Add("http://+:" + Port.ToString() + "/");
+            server.Locals.TryAdd("device_list", device_list);
+            server.Locals.TryAdd("state", state);
+            server.Start();
 
+            Console.WriteLine("Press enter to stop the server");
+            Console.ReadLine();
 
-                Console.Out.WriteLine(t);
-                Message m = JsonConvert.DeserializeObject<Message>(t);
-                Console.Out.WriteLine(m.action_handle);
-                string plate_type = m.action_vars["plate_type"];
-                int plate_type_int = Int32.Parse(plate_type);
-                int device_num = Biometra_Functions.Connect(device_list, plate_type_int);
-                if (m.action_handle == ("run_protocol"))
-                {
-                    string prog = m.action_vars["program"];
-                    int prog_int = Int32.Parse(prog);
-                    Biometra_Functions.run_program(device_list, prog_int, device_num);
-                    System.Threading.Thread.Sleep(10000);
-                    int plate_status = Biometra_Functions.wait_until_ready(device_list, device_num);
-                    //TODO: raise error if plate_status is -1
-
-                    // send response when protocol is finished
-                    response = new Dictionary<string, string>();
-                    response.Add("action_response", "StepStatus.SUCCEEDED");
-                    response.Add("action_msg", "program ran");
-                    response.Add("action_log", "program ran");
-                    msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
-                    server.SendFrame(msg);
-                }
-                else if (m.action_handle == ("open_lid"))
-                {
-                    Biometra_Functions.open_lid(device_list, device_num);
-                    System.Threading.Thread.Sleep(25000);
-                    //TODO: check if lid is closed, then check if its open
-                    response = new Dictionary<string, string>();
-                    response.Add("action_response", "StepStatus.SUCCEEDED");
-                    response.Add("action_msg", "lid opened");
-                    response.Add("action_log", "lid opened");
-                    msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
-                    server.SendFrame(msg);
-
-                }
-                else if (m.action_handle == ("close_lid"))
-                {
-                    Biometra_Functions.close_lid(device_list, device_num);
-                    System.Threading.Thread.Sleep(25000);
-                    //TODO: check if lid is open, then check if its closed
-                    response = new Dictionary<string, string>();
-                    response.Add("action_response", "StepStatus.SUCCEEDED");
-                    response.Add("action_msg", "lid closed");
-                    response.Add("action_log", "lid closed");
-                    msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
-                    server.SendFrame(msg);
-                }
-                else if (m.action_handle == ("get_status"))
-                {
-                    bool is_active = Biometra_Functions.get_state(device_list, device_num);
-                    if (is_active == true)
-                    {
-                        response = new Dictionary<string, string>();
-                        response.Add("action_response", "StepStatus.SUCCEEDED");
-                        response.Add("action_msg", "block running");
-                        response.Add("action_log", "block running");
-                        msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
-                        server.SendFrame(msg);
-                    }
-                    else
-                    {
-                        response = new Dictionary<string, string>();
-                        response.Add("action_response", "StepStatus.SUCCEEDED");
-                        response.Add("action_msg", "block free");
-                        response.Add("action_log", "block free");
-                        msg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response));
-                        server.SendFrame(msg);
-                    }
-                }
-                else
-                {
-                    // TODO: no correct command
-                    Console.WriteLine("INVALID COMMAND");
-                }
-            }
+            server.Stop();
         }
 
+        private void InitializeBiometra()
+        {
+            device_list = Biometra_Functions.FindDevices();
+        }
     }
 }
-

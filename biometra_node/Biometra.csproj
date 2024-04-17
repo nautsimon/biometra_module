@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grapevine" Version="5.0.0-rc.10" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
     <PackageReference Include="System.IO.Ports" Version="7.0.0" />
     <PackageReference Include="NetMQ" Version="4.0.1.13" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
